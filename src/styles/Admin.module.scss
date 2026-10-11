@@ -1,0 +1,23 @@
+@use '../theme/tokens' as *;
+
+.screen {
+  flex: 1;
+  background-color: $ground;
+  padding-horizontal: $space-l;
+  gap: $space-m;
+}
+
+.header {
+  flex-direction: row;
+  align-items: center;
+  padding-top: $space-xl;
+}
+
+.grow {
+  flex: 1;
+}
+
+.content {
+  gap: $space-s;
+  padding-bottom: $space-xl;
+}

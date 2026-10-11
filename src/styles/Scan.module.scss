@@ -4,8 +4,17 @@
   flex: 1;
   background-color: $ground;
   padding-horizontal: $space-l;
-  padding-top: $space-m;
   gap: $space-m;
+}
+
+.header {
+  flex-direction: row;
+  align-items: center;
+  padding-top: $space-xl;
+}
+
+.grow {
+  flex: 1;
 }
 
 .view {

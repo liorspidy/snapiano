@@ -11,7 +11,8 @@ export const LANG_KEY = 'snapiano.lang';
 const LANGS = [['he', 'עברית', 'עב'], ['en', 'English', 'EN'], ['fr', 'Français', 'FR'], ['ar', 'العربية', 'عر'], ['ru', 'Русский', 'RU']]
   .map(([value, label, short]) => ({ value, label, short, icon: <Flag code={value} /> }));
 
-export function LanguagePicker() {
+// compact (login and sign-up): flag and short code only. Everywhere else: the full language names.
+export function LanguagePicker({ compact = false }: { compact?: boolean }) {
   const { t, i18n } = useTranslation();
   const { session } = useAuth();
 
@@ -21,5 +22,5 @@ export function LanguagePicker() {
     await changeLanguage(lng as Lang);
   };
 
-  return <Select compact label={t('lang.title')} options={LANGS} value={i18n.language} onChange={pick} />;
+  return <Select compact={compact} hideLabel={!compact} label={t('lang.title')} options={LANGS} value={i18n.language} onChange={pick} />;
 }

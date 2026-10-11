@@ -8,7 +8,7 @@ type Props<T extends string> = { tabs: Tab<T>[]; active: T; onChange: (id: T) =>
 // Ported from take5 ui/tabs: chip tabs by default, `underline` for the underlined style. Scrolls sideways when tabs do not fit.
 export function Tabs<T extends string>({ tabs, active, onChange, accessibilityLabel, underline = false }: Props<T>) {
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} accessibilityRole="tablist" accessibilityLabel={accessibilityLabel}
+    <ScrollView horizontal style={classes.scroll} showsHorizontalScrollIndicator={false} accessibilityRole="tablist" accessibilityLabel={accessibilityLabel}
       contentContainerStyle={[classes.tabs, underline && classes.underlineTabs]}>
       {tabs.map((tab) => {
         const on = tab.id === active;

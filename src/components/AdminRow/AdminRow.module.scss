@@ -1,0 +1,21 @@
+@use '../../theme/tokens' as *;
+
+.row {
+  min-height: 72px;
+  flex-direction: row;
+  align-items: center;
+  gap: $space-m;
+  padding-vertical: $space-m;
+  padding-horizontal: $space-l;
+  background-color: $surface;
+  border-radius: $radius-m;
+}
+
+.text {
+  flex: 1;
+  gap: 2px;
+}
+
+.pressed {
+  transform: scale(0.96);
+}

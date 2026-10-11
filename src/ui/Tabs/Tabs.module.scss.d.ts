@@ -15,5 +15,6 @@ declare const classes: {
   readonly 'underlineTab': Style;
   readonly 'underlineTabOn': Style;
   readonly 'underlineLabelOn': Style;
+  readonly 'scroll': Style;
 };
 export default classes;

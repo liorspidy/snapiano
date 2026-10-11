@@ -14,6 +14,8 @@ if (__DEV__) console.log(`[auth] add this exact address to Supabase > Authentica
 type Auth = {
   session: Session | null;
   loading: boolean;
+  /** Set when the account was just signed out because it is banned: an ISO date, or 'infinity'. */
+  banned: string | null;
   signInWithGoogle: () => Promise<void>;
   logIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<{ needsConfirmation: boolean }>;
@@ -35,6 +37,7 @@ async function sessionFromUrl(url: string) {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [banned, setBanned] = useState<string | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => { setSession(data.session); setLoading(false); });
@@ -48,6 +51,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       st === 'active' ? supabase.auth.startAutoRefresh() : supabase.auth.stopAutoRefresh());
     return () => { sub.subscription.unsubscribe(); link.remove(); app.remove(); };
   }, []);
+
+  // A banned account is signed out right away and told why on the login screen.
+  useEffect(() => {
+    if (!session) return;
+    supabase.rpc('my_entitlements').then(({ data }) => {
+      if (data?.banned_until) { setBanned(data.banned_until); supabase.auth.signOut(); }
+    });
+  }, [session]);
 
   const signInWithGoogle = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -71,5 +82,5 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => { await supabase.auth.signOut(); };
 
-  return <Ctx.Provider value={{ session, loading, signInWithGoogle, logIn, signUp, signOut }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ session, loading, banned, signInWithGoogle, logIn, signUp, signOut }}>{children}</Ctx.Provider>;
 }

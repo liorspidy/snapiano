@@ -15,6 +15,7 @@ type Props = {
   onChange: (value: string) => void;
   error?: string;
   compact?: boolean;
+  hideLabel?: boolean;
 };
 
 const GAP = 6;
@@ -22,7 +23,7 @@ const MENU_MAX = 264;
 const MENU_MIN_COMPACT = 132;
 
 // Dropdown ported from the take5 design system. compact: no visible label, no chevron, short values.
-export function Select({ label, options, value, onChange, error, compact = false }: Props) {
+export function Select({ label, options, value, onChange, error, compact = false, hideLabel = false }: Props) {
   const rtl = useIsRtl();
   const trigger = useRef<View>(null);
   const [box, setBox] = useState<{ x: number; y: number; w: number; h: number }>();
@@ -54,9 +55,9 @@ export function Select({ label, options, value, onChange, error, compact = false
         accessibilityLabel={label}
         accessibilityValue={{ text: selected?.label }}
         accessibilityState={{ expanded: open }}
-        style={({ pressed }) => [classes.trigger, compact && classes.compactTrigger, open && classes.open, !!error && classes.invalid, pressed && classes.pressed]}
+        style={({ pressed }) => [classes.trigger, compact && classes.compactTrigger, hideLabel && classes.plainTrigger, open && classes.open, !!error && classes.invalid, pressed && classes.pressed]}
       >
-        {!compact && (
+        {!compact && !hideLabel && (
           <Animated.Text
             style={[classes.label, {
               top: floated.interpolate({ inputRange: [0, 1], outputRange: [17, 7] }),

@@ -17,5 +17,6 @@ declare const classes: {
   readonly 'backdrop': Style;
   readonly 'rtl': Style;
   readonly 'pressed': Style;
+  readonly 'plainTrigger': Style;
 };
 export default classes;

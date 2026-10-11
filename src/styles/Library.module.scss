@@ -27,6 +27,11 @@
   background-color: $surface;
 }
 
+.emptyContent {
+  align-items: center;
+  gap: $space-l;
+}
+
 .list {
   gap: $space-s;
 }
@@ -40,10 +45,25 @@
 
 .row {
   min-height: 72px;
-  justify-content: center;
+  flex-direction: row;
+  align-items: center;
   background-color: $surface;
   border-radius: 12px;
-  padding-horizontal: $space-l;
+  padding-start: $space-l;
+  padding-end: $space-xs;
+}
+
+.rowMain {
+  flex: 1;
+  min-height: 72px;
+  justify-content: center;
+}
+
+.delete {
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
 }
 
 .actions {
@@ -61,4 +81,8 @@
 
 .pressed {
   transform: scale(0.96);
+}
+
+.modalActions {
+  gap: $space-s;
 }

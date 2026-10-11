@@ -5,12 +5,16 @@ declare const classes: {
   readonly 'header': Style;
   readonly 'titleRow': Style;
   readonly 'account': Style;
+  readonly 'emptyContent': Style;
   readonly 'list': Style;
   readonly 'empty': Style;
   readonly 'row': Style;
+  readonly 'rowMain': Style;
+  readonly 'delete': Style;
   readonly 'actions': Style;
   readonly 'grow': Style;
   readonly 'centered': Style;
   readonly 'pressed': Style;
+  readonly 'modalActions': Style;
 };
 export default classes;

@@ -9,5 +9,6 @@ declare const classes: {
   readonly 'section': Style;
   readonly 'input': Style;
   readonly 'actions': Style;
+  readonly 'modalActions': Style;
 };
 export default classes;
