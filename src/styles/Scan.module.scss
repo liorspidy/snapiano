@@ -39,3 +39,56 @@
 .centered {
   text-align: center;
 }
+
+.camera {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.guide {
+  position: absolute;
+  top: 6%;
+  bottom: 6%;
+  left: 6%;
+  right: 6%;
+  border: 2px solid rgba($surface, 0.7);
+  border-radius: $radius-s;
+}
+
+.focusRing {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  border: 2px solid $surface;
+  border-radius: $radius-m;
+}
+
+.tools {
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: $space-s;
+}
+
+.tool {
+  width: $touch-min;
+  min-height: $touch-min;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-m;
+  background-color: $brand-navy;
+}
+
+.toolOn {
+  background-color: $surface;
+}
+
+.toolText {
+  color: $surface;
+}
+
+.pressed {
+  transform: scale(0.96);
+}

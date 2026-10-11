@@ -1,0 +1,73 @@
+@use '../theme/tokens' as *;
+
+.screen {
+  flex: 1;
+  background-color: $ground;
+  padding-horizontal: $space-l;
+}
+
+.header {
+  flex-direction: row;
+  align-items: center;
+  padding-top: $space-xl;
+}
+
+.grow {
+  flex: 1;
+}
+
+.content {
+  gap: $space-m;
+  padding-bottom: $space-l;
+}
+
+.summary {
+  gap: $space-xs;
+}
+
+.page {
+  background-color: $surface;
+  border-radius: $radius-m;
+  border: 1px solid $line;
+  overflow: hidden;
+  direction: ltr;
+}
+
+.band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border: 2px solid $warning;
+  background-color: rgba($warning, 0.12);
+}
+
+.bandLabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding-horizontal: $space-xs;
+  background-color: $surface;
+  color: $warning;
+}
+
+.dot {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 5px;
+  opacity: 0.75;
+}
+
+.actions {
+  gap: $space-s;
+  padding-top: $space-s;
+  padding-bottom: $space-l;
+}
+
+.question {
+  text-align: center;
+}
+
+.modalActions {
+  gap: $space-s;
+}

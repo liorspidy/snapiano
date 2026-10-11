@@ -8,5 +8,13 @@ declare const classes: {
   readonly 'center': Style;
   readonly 'actions': Style;
   readonly 'centered': Style;
+  readonly 'camera': Style;
+  readonly 'guide': Style;
+  readonly 'focusRing': Style;
+  readonly 'tools': Style;
+  readonly 'tool': Style;
+  readonly 'toolOn': Style;
+  readonly 'toolText': Style;
+  readonly 'pressed': Style;
 };
 export default classes;

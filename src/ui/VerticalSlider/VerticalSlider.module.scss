@@ -1,0 +1,41 @@
+@use '../../theme/tokens' as *;
+
+.column {
+  align-items: center;
+  gap: $space-s;
+}
+
+.touch {
+  width: $touch-min;
+  align-items: center;
+}
+
+.rail {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  border-radius: 3px;
+  background-color: $borderStrong;
+}
+
+.fill {
+  position: absolute;
+  bottom: 0;
+  width: 6px;
+  border-radius: 3px;
+  background-color: $ink;
+}
+
+.thumb {
+  position: absolute;
+  width: 44px;
+  height: 28px;
+  border-radius: $radius-s;
+  background-color: $surface;
+  border: 3px solid $ink;
+}
+
+.value {
+  font-variant: tabular-nums;
+}

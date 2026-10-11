@@ -17,12 +17,14 @@ type Props = {
   closeLabel?: string;
   maxWidth?: number;
   mobileCard?: boolean;
+  compact?: boolean;
+  closeLeft?: boolean;
 };
 
 const ANIMATION_MS = 200;
 
-// Ported from take5 ui/modal: centered dialog, or a bottom sheet with mobileCard. Stays mounted until the exit animation ends.
-export function Modal({ open, onClose, children, footer, title, titleIcon, hasCloseBtn = false, closeLabel = '', maxWidth = 632, mobileCard = false }: Props) {
+// Ported from take5 ui/modal: centered dialog, or a bottom sheet with mobileCard. compact: 4px gaps around the body (short landscape screens). closeLeft: X on the physical left, in any language. Stays mounted until the exit animation ends.
+export function Modal({ open, onClose, children, footer, title, titleIcon, hasCloseBtn = false, closeLabel = '', maxWidth = 632, mobileCard = false, compact = false, closeLeft = false }: Props) {
   const rtl = useIsRtl();
   const [mounted, setMounted] = useState(open);
   const shown = useRef(new Animated.Value(0)).current;
@@ -51,9 +53,9 @@ export function Modal({ open, onClose, children, footer, title, titleIcon, hasCl
           style={[classes.dialog, mobileCard ? classes.sheet : classes.dialogCentered, { maxWidth: mobileCard ? undefined : maxWidth, opacity: shown }, motion]}
         >
           {(title || hasCloseBtn) && (
-            <View style={classes.header}>
+            <View style={[classes.header, compact && classes.headerCompact, closeLeft && classes.headerCloseLeft]}>
               {title && (
-                <View style={classes.titleRow}>
+                <View style={[classes.titleRow, closeLeft && rtl && classes.rtl]}>
                   {titleIcon && <Image source={{ uri: titleIcon }} style={classes.titleIcon} accessibilityIgnoresInvertColors />}
                   <Text variant={mobileCard ? 'title' : 'bodyLarge'} accessibilityRole="header">{title}</Text>
                 </View>
@@ -66,7 +68,7 @@ export function Modal({ open, onClose, children, footer, title, titleIcon, hasCl
             </View>
           )}
           <ScrollView style={classes.body} keyboardShouldPersistTaps="handled">{children}</ScrollView>
-          {footer && <View style={classes.footer}>{footer}</View>}
+          {footer && <View style={[classes.footer, compact && classes.footerCompact]}>{footer}</View>}
         </Animated.View>
       </View>
     </RNModal>

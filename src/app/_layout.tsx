@@ -38,6 +38,7 @@ function Routes() {
                     <Stack.Screen name="index" />
                     <Stack.Screen name="scan" />
                     <Stack.Screen name="process" />
+                    <Stack.Screen name="review" />
                     <Stack.Screen name="practice" />
                     <Stack.Screen name="admin" />
                     {/* The account button sits at the end of the library title row: the page slides in from, and back out to, that side. */}

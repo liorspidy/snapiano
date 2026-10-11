@@ -17,9 +17,14 @@ declare const classes: {
   readonly 'chipLabel': Style;
   readonly 'chipLabelOn': Style;
   readonly 'message': Style;
-  readonly 'bpm': Style;
+  readonly 'bpmLabel': Style;
+  readonly 'bpmValue': Style;
   readonly 'lineLabel': Style;
   readonly 'line': Style;
   readonly 'playIcon': Style;
+  readonly 'tempoRow': Style;
+  readonly 'tempoInput': Style;
+  readonly 'tempoUnit': Style;
+  readonly 'mixer': Style;
 };
 export default classes;

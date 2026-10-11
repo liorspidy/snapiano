@@ -85,3 +85,18 @@
   padding-top: $space-l;
   border-top: 1px solid $line;
 }
+
+.headerCompact {
+  margin-bottom: 4px;
+}
+
+.footerCompact {
+  margin-top: 4px;
+  padding-top: 0;
+  border-top-width: 0;
+}
+
+.headerCloseLeft {
+  direction: ltr;
+  flex-direction: row-reverse;
+}

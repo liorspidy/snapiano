@@ -10,7 +10,10 @@
     "expo-blur": "~57.0.3",
     "expo-camera": "~57.0.6",
     "expo-constants": "~57.0.21",
+    "expo-dev-client": "~57.0.19",
+    "expo-file-system": "~57.0.7",
     "expo-font": "~57.0.4",
+    "expo-image-manipulator": "~57.0.21",
     "expo-image-picker": "~57.0.20",
     "expo-linking": "~57.0.12",
     "expo-localization": "~57.0.2",
@@ -20,6 +23,7 @@
     "expo-updates": "~57.0.25",
     "expo-web-browser": "~57.0.3",
     "i18next": "^26.4.3",
+    "jpeg-js": "^0.4.4",
     "lucide-react-native": "^1.55.0",
     "react": "19.2.3",
     "react-i18next": "^17.0.16",
@@ -39,11 +43,12 @@
   },
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "tokens": "node --experimental-strip-types tools/make_tokens_scss.mjs",
-    "scss-types": "node tools/make_scss_types.mjs"
+    "scss-types": "node tools/make_scss_types.mjs",
+    "test": "node --experimental-strip-types --test tests/*.test.ts"
   },
   "private": true
 }

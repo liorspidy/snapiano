@@ -6,11 +6,13 @@ import { useTranslation } from "react-i18next";
 import { usePageLoader } from "@/components/PageLoader/PageLoader";
 import { Button } from "@/ui/Button/Button";
 import { Text } from "@/ui/Text/Text";
+import { scanErrorKey } from "@/lib/errorMessages";
 import { supabase } from "@/lib/supabase";
 import classes from "@/styles/Process.module.scss";
 import { useDirection } from "@/hooks/useDirection";
 
 type Scan = {
+    error: string | null;
     status: "queued" | "processing" | "done" | "failed";
     measures: number | null;
     flagged_measures: number[] | null;
@@ -29,7 +31,7 @@ export default function Process() {
         const tick = async () => {
             const { data } = await supabase
                 .from("scans")
-                .select("status, measures, flagged_measures, piece_id")
+                .select("status, measures, flagged_measures, piece_id, error")
                 .eq("id", id)
                 .single();
             if (stop) return;
@@ -49,53 +51,28 @@ export default function Process() {
 
     const working =
         !scan || scan.status === "queued" || scan.status === "processing";
-    const flagged = scan?.flagged_measures?.length ?? 0;
     usePageLoader(working, t("process.title"));
+
+    // A finished scan opens the review, where the result is checked and accepted. Only failures stay on this screen.
+    useEffect(() => {
+        if (scan?.status === "done" && scan.piece_id) {
+            router.replace({ pathname: "/review", params: { id: scan.piece_id } });
+        }
+    }, [scan]);
 
     return (
         <SafeAreaView style={[classes.screen, direction]}>
             <View style={classes.body}>
-                {!working && (
-                    <Text
-                        variant="headline"
-                        accessibilityRole="header"
-                        style={classes.centered}
-                    >
-                        {scan.status === "done"
-                            ? t("review.found", { count: scan.measures ?? 0 })
-                            : t("process.failed")}
-                    </Text>
-                )}
-                {scan?.status === "done" && (
-                    <Text
-                        variant="bodyLarge"
-                        tone="inkSecondary"
-                        style={classes.centered}
-                    >
-                        {flagged
-                            ? t("review.toCheck", { count: flagged })
-                            : t("review.ready")}
+                {scan?.status === "failed" && (
+                    <Text variant="headline" accessibilityRole="header" style={classes.centered}>
+                        {t(scanErrorKey(scan.error))}
                     </Text>
                 )}
             </View>
-            {!working && (
+            {scan?.status === "failed" && (
                 <View style={classes.actions}>
-                    {scan.status === "done" && scan.piece_id ? (
-                        <Button onPress={() => router.replace("/")}>
-                            {t("process.back")}
-                        </Button>
-                    ) : (
-                        <Button
-                            onPress={() =>
-                                router.replace({
-                                    pathname: "/practice",
-                                    params: { id: scan.piece_id! },
-                                })
-                            }
-                        >
-                            {t("review.startPractice")}
-                        </Button>
-                    )}
+                    <Button onPress={() => router.replace("/scan")}>{t("library.scan")}</Button>
+                    <Button secondary onPress={() => router.replace("/")}>{t("process.back")}</Button>
                 </View>
             )}
         </SafeAreaView>

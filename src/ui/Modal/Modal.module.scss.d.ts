@@ -15,5 +15,8 @@ declare const classes: {
   readonly 'pressed': Style;
   readonly 'body': Style;
   readonly 'footer': Style;
+  readonly 'headerCompact': Style;
+  readonly 'footerCompact': Style;
+  readonly 'headerCloseLeft': Style;
 };
 export default classes;

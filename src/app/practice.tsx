@@ -1,14 +1,17 @@
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import { Image, Pressable, View } from "react-native";
+import { Image, Pressable, TextInput, useWindowDimensions, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import * as ScreenOrientation from "expo-screen-orientation";
-import { Minus, Pause, Play, Plus, X } from "lucide-react-native";
+import { Minus, Pause, Play, Plus, SlidersVertical, X } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { FallingNotes } from "@/components/FallingNotes/FallingNotes";
 import { Keyboard } from "@/components/Keyboard/Keyboard";
 import { Text } from "@/ui/Text/Text";
-import { playNote } from "@/audio/synth";
+import { Modal } from "@/ui/Modal/Modal";
+import { Button } from "@/ui/Button/Button";
+import { mix, playNote, setMix } from "@/audio/synth";
+import { VerticalSlider } from "@/ui/VerticalSlider/VerticalSlider";
 import { loadPiece, Piece } from "@/lib/piece";
 import { color, handColor } from "@/theme/tokens";
 import classes from "@/styles/Practice.module.scss";
@@ -16,6 +19,8 @@ import { useDirection } from "@/hooks/useDirection";
 
 type Hands = "both" | "R" | "L";
 const TICK_MS = 33;
+const MIN_BPM = 30;
+const MAX_BPM = 200;
 
 function Chip({
     label,
@@ -63,6 +68,25 @@ export default function Practice() {
     const [failed, setFailed] = useState(false);
     const [hands, setHands] = useState<Hands>("both");
     const [bpm, setBpm] = useState(80);
+    const [tempoOpen, setTempoOpen] = useState(false);
+    const [mixerOpen, setMixerOpen] = useState(false);
+    // The modal is at most 86% of the screen; its padding, title and labels take ~155dp, the faders get the rest.
+    const sliderHeight = Math.min(220, Math.max(80, Math.floor(useWindowDimensions().height * 0.86) - 155));
+    const [levels, setLevels] = useState({ ...mix });
+    const setLevel = (part: Partial<typeof mix>) => {
+        setMix(part);
+        setLevels({ ...mix });
+    };
+    const [bpmText, setBpmText] = useState("80");
+    const closeTempo = () => {
+        setTempo(Number(bpmText));
+        setTempoOpen(false);
+    };
+    const setTempo = (v: number) => {
+        const next = Math.min(MAX_BPM, Math.max(MIN_BPM, Math.round(v) || bpm));
+        setBpm(next);
+        setBpmText(String(next));
+    };
     const [playing, setPlaying] = useState(false);
     const [pos, setPos] = useState(0); // quarter notes
     const [view, setView] = useState({ w: 0, h: 0 });
@@ -178,6 +202,9 @@ export default function Practice() {
                     )}
                 </Pressable>
                 <View style={classes.group}>
+                    <Text variant="label" style={classes.bpmLabel}>
+                        {t("practice.hands")}:
+                    </Text>
                     <Chip
                         label={t("practice.both")}
                         on={hands === "both"}
@@ -194,29 +221,36 @@ export default function Practice() {
                         onPress={() => setHands("L")}
                     />
                 </View>
-                <View style={classes.group}>
-                    <Chip
-                        icon={<Minus color={color.stageText} size={20} />}
-                        accessibilityLabel={t("practice.slower")}
-                        on={false}
-                        onPress={() => setBpm((b) => Math.max(30, b - 5))}
-                    />
-                    <Text variant="label" style={classes.bpm}>
-                        {bpm} {t("practice.bpm")}
-                    </Text>
-                    <Chip
-                        icon={<Plus color={color.stageText} size={20} />}
-                        accessibilityLabel={t("practice.faster")}
-                        on={false}
-                        onPress={() => setBpm((b) => Math.min(200, b + 5))}
-                    />
-                </View>
+                <Chip
+                    icon={<SlidersVertical color={color.stageText} size={20} />}
+                    accessibilityLabel={t("practice.mixer")}
+                    on={false}
+                    onPress={() => setMixerOpen(true)}
+                />
                 <Text variant="caption" style={classes.lineLabel}>
                     {t("practice.line", {
                         n: lineNo,
                         total: piece.lines.length,
                     })}
                 </Text>
+                <View style={classes.group}>
+                    <Text variant="label" style={classes.bpmLabel}>
+                        bpm:
+                    </Text>
+                    <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel={`${t("practice.tempo")}: ${bpm}`}
+                        onPress={() => {
+                            setBpmText(String(bpm));
+                            setTempoOpen(true);
+                        }}
+                        style={({ pressed }) => [classes.chip, pressed && classes.pressed]}
+                    >
+                        <Text variant="label" style={classes.bpmValue}>
+                            {bpm}
+                        </Text>
+                    </Pressable>
+                </View>
                 <Pressable
                     accessibilityRole="button"
                     accessibilityLabel={t("process.back")}
@@ -284,6 +318,61 @@ export default function Practice() {
             <View style={classes.keys}>
                 <Keyboard low={low} high={high} lit={lit} />
             </View>
+            <Modal
+                open={tempoOpen}
+                onClose={closeTempo}
+                title={t("practice.tempo")}
+                closeLabel={t("practice.done")}
+                maxWidth={400}
+                footer={<Button onPress={closeTempo}>{t("practice.done")}</Button>}
+            >
+                <Text variant="label" tone="inkSecondary" style={classes.tempoUnit}>
+                    bpm
+                </Text>
+                <View style={classes.tempoRow}>
+                    <Button
+                        secondary
+                        sizeFormat="fitContent"
+                        accessibilityLabel={t("practice.slower")}
+                        onPress={() => setTempo(bpm - 5)}
+                    >
+                        <Minus color={color.ink} size={20} />
+                    </Button>
+                    <TextInput
+                        style={classes.tempoInput}
+                        value={bpmText}
+                        accessibilityLabel={`${t("practice.tempo")}, ${t("practice.bpm")}`}
+                        keyboardType="number-pad"
+                        maxLength={3}
+                        selectTextOnFocus
+                        onChangeText={(v) => setBpmText(v.replace(/\D/g, ""))}
+                        onEndEditing={() => setTempo(Number(bpmText))}
+                    />
+                    <Button
+                        secondary
+                        sizeFormat="fitContent"
+                        accessibilityLabel={t("practice.faster")}
+                        onPress={() => setTempo(bpm + 5)}
+                    >
+                        <Plus color={color.ink} size={20} />
+                    </Button>
+                </View>
+            </Modal>
+            <Modal
+                open={mixerOpen}
+                onClose={() => setMixerOpen(false)}
+                title={t("practice.mixer")}
+                closeLabel={t("practice.done")}
+                maxWidth={400}
+                compact
+                closeLeft
+                hasCloseBtn
+            >
+                <View style={classes.mixer}>
+                    <VerticalSlider label={t("practice.volume")} value={levels.volume} onChange={(v) => setLevel({ volume: v })} height={sliderHeight} />
+                    <VerticalSlider label={t("practice.reverb")} value={levels.reverb} onChange={(v) => setLevel({ reverb: v })} height={sliderHeight} />
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 }

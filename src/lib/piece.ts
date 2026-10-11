@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 
-export type Mark = { m: number; s: number; d: number; h: 'R' | 'L'; line: number; x: number; y: number };
+export type Mark = { m: number; s: number; d: number; h: 'R' | 'L'; line: number; x: number; y: number; b?: number };
 export type Line = { uri: string; w: number; h: number };
 export type Piece = { bpm: number; notes: Mark[]; lines: Line[] };
 

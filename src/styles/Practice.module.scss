@@ -99,9 +99,14 @@
   padding: $space-l;
 }
 
-.bpm {
+.bpmLabel {
   color: $stageText;
-  min-width: 64px;
+}
+
+.bpmValue {
+  color: $stageText;
+  font-family: Rubik_700Bold;
+  min-width: 32px;
   text-align: center;
   font-variant: tabular-nums;
 }
@@ -117,4 +122,34 @@
 
 .playIcon {
   margin-left: 2px;
+}
+
+.tempoRow {
+  flex-direction: row;
+  align-items: center;
+  gap: $space-s;
+}
+
+.tempoInput {
+  flex: 1;
+  height: 80px;
+  font-family: Rubik_700Bold;
+  font-size: 48px;
+  text-align: center;
+  color: $ink;
+  background-color: $surface;
+  border-radius: $radius-m;
+  border: 1px solid $borderStrong;
+  font-variant: tabular-nums;
+}
+
+.tempoUnit {
+  text-align: center;
+}
+
+.mixer {
+  flex-direction: row;
+  justify-content: center;
+  gap: $space-xl;
+  direction: ltr;
 }
