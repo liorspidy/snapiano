@@ -1,0 +1,52 @@
+$ink: #0B1733;
+$inkSecondary: #2C3956;
+$inkMuted: #4D5A75;
+$ground: #ECEFF5;
+$surface: #FFFFFF;
+$line: #E1E5EB;
+$borderStrong: #717D96;
+$rh: #2F5FE8;
+$lh: #F2A23A;
+$rhOnLight: #2350D8;
+$lhOnLight: #C26A00;
+$warning: #8A5300;
+$success: #1D7A46;
+$error: #B3261E;
+$stage: #07122A;
+$stageRaised: #15223D;
+$stageText: #C8D2E4;
+$felt: #5B1E2A;
+$colors: (
+  ink: $ink,
+  inkSecondary: $inkSecondary,
+  inkMuted: $inkMuted,
+  ground: $ground,
+  surface: $surface,
+  line: $line,
+  borderStrong: $borderStrong,
+  rh: $rh,
+  lh: $lh,
+  rhOnLight: $rhOnLight,
+  lhOnLight: $lhOnLight,
+  warning: $warning,
+  success: $success,
+  error: $error,
+  stage: $stage,
+  stageRaised: $stageRaised,
+  stageText: $stageText,
+  felt: $felt
+);
+$space-xs: 4px;
+$space-s: 8px;
+$space-m: 12px;
+$space-l: 16px;
+$space-xl: 24px;
+$space-xxl: 32px;
+$radius-s: 8px;
+$radius-m: 12px;
+$radius-l: 16px;
+$radius-sheet: 22px;
+$radius-pill: 999px;
+$touch-min: 48px;
+$touch-gap: 8px;
+$touch-primaryHeight: 56px;

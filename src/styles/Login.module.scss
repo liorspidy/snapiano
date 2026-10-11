@@ -1,0 +1,64 @@
+@use '../theme/tokens' as *;
+
+.screen {
+  flex: 1;
+  background-color: $ground;
+}
+
+.scroll {
+  flex-grow: 1;
+  padding-horizontal: $space-l;
+}
+
+.language {
+  align-self: flex-end;
+  padding-top: $space-s;
+}
+
+.card {
+  flex: 1;
+  width: 100%;
+  max-width: 380px;
+  align-self: center;
+  justify-content: center;
+  gap: $space-l;
+  padding-vertical: $space-xl;
+}
+
+.brand {
+  align-items: center;
+  gap: $space-s;
+}
+
+.tagline {
+  text-align: center;
+}
+
+.google {
+  margin-top: $space-s;
+}
+
+.divider {
+  flex-direction: row;
+  align-items: center;
+  gap: $space-m;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background-color: $line;
+}
+
+.message {
+  text-align: center;
+}
+
+.bottom {
+  gap: $space-s;
+  padding-bottom: $space-l;
+}
+
+.terms {
+  text-align: center;
+}

@@ -1,0 +1,27 @@
+@use '../../theme/tokens' as *;
+
+.track {
+  width: 44px;
+  height: 26px;
+  border-radius: 13px;
+  background-color: $borderStrong;
+  flex-shrink: 0;
+  justify-content: center;
+}
+
+.trackOn {
+  background-color: $ink;
+}
+
+.thumb {
+  position: absolute;
+  start: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  background-color: $surface;
+}
+
+.disabled {
+  opacity: 0.5;
+}

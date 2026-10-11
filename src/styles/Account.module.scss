@@ -1,0 +1,34 @@
+@use '../theme/tokens' as *;
+
+.screen {
+  flex: 1;
+  background-color: $ground;
+  padding-horizontal: $space-l;
+}
+
+.content {
+  padding-top: $space-xl;
+  gap: $space-s;
+  padding-bottom: $space-l;
+}
+
+.section {
+  margin-top: $space-l;
+}
+
+.input {
+  min-height: $touch-min;
+  border-radius: $radius-m;
+  border-width: 1px;
+  border-color: $borderStrong;
+  background-color: $surface;
+  padding-horizontal: $space-l;
+  color: $ink;
+  font-family: Rubik_400Regular;
+  font-size: 16px;
+}
+
+.actions {
+  gap: $space-s;
+  padding-bottom: $space-l;
+}

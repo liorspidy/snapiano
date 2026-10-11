@@ -1,0 +1,13 @@
+@use '../../theme/tokens' as *;
+
+.section {
+  gap: $space-l;
+}
+
+.header {
+  gap: 2px;
+}
+
+.fields {
+  gap: 18px;
+}

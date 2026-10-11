@@ -1,0 +1,31 @@
+@use '../theme/tokens' as *;
+
+.screen {
+  flex: 1;
+  background-color: $ground;
+  padding-horizontal: $space-l;
+  padding-top: $space-m;
+  gap: $space-m;
+}
+
+.view {
+  flex: 1;
+  border-radius: $radius-l;
+  overflow: hidden;
+  background-color: $surface;
+}
+
+.center {
+  align-items: center;
+  justify-content: center;
+  padding: $space-xl;
+}
+
+.actions {
+  gap: $space-s;
+  padding-bottom: $space-l;
+}
+
+.centered {
+  text-align: center;
+}

@@ -1,0 +1,55 @@
+@use '../../theme/tokens' as *;
+
+.badge {
+  align-self: flex-start;
+  flex-direction: row;
+  align-items: center;
+  padding-horizontal: 10px;
+  padding-vertical: 4px;
+  border-radius: $radius-pill;
+}
+
+.small {
+  padding-horizontal: $space-s;
+  padding-vertical: 2px;
+}
+
+.queued {
+  background-color: $ground;
+}
+
+.processing {
+  background-color: $ground;
+}
+
+.done {
+  background-color: rgba($success, 0.12);
+}
+
+.failed {
+  background-color: rgba($error, 0.12);
+}
+
+.warning {
+  background-color: rgba($warning, 0.12);
+}
+
+.queuedText {
+  color: $inkSecondary;
+}
+
+.processingText {
+  color: $inkSecondary;
+}
+
+.doneText {
+  color: $success;
+}
+
+.failedText {
+  color: $error;
+}
+
+.warningText {
+  color: $warning;
+}

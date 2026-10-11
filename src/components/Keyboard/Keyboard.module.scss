@@ -1,0 +1,36 @@
+@use '../../theme/tokens' as *;
+
+.row {
+  flex-direction: row;
+  height: 100%;
+  direction: ltr;
+  border-top-width: 6px;
+  border-top-color: $felt;
+}
+
+.white {
+  height: 100%;
+  border-width: 0.5px;
+  border-color: $borderStrong;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  justify-content: flex-end;
+  align-items: center;
+  padding-bottom: 4px;
+}
+
+.black {
+  position: absolute;
+  top: 0px;
+  height: 60%;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.labelRight {
+  color: $surface;
+}
+
+.labelLeft {
+  color: $ink;
+}

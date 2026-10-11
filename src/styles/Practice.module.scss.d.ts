@@ -1,0 +1,24 @@
+import type { ImageStyle, TextStyle, ViewStyle } from 'react-native';
+type Style = ViewStyle & TextStyle & ImageStyle;
+declare const classes: {
+  readonly 'stage': Style;
+  readonly 'controls': Style;
+  readonly 'group': Style;
+  readonly 'play': Style;
+  readonly 'chip': Style;
+  readonly 'sheet': Style;
+  readonly 'mark': Style;
+  readonly 'cursor': Style;
+  readonly 'falling': Style;
+  readonly 'keys': Style;
+  readonly 'close': Style;
+  readonly 'pressed': Style;
+  readonly 'chipOn': Style;
+  readonly 'chipLabel': Style;
+  readonly 'chipLabelOn': Style;
+  readonly 'message': Style;
+  readonly 'bpm': Style;
+  readonly 'lineLabel': Style;
+  readonly 'line': Style;
+};
+export default classes;

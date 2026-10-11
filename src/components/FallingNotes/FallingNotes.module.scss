@@ -1,0 +1,26 @@
+@use '../../theme/tokens' as *;
+
+.box {
+  flex: 1;
+  direction: ltr;
+  background-color: $stageRaised;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.note {
+  position: absolute;
+  border-radius: 4px;
+  min-height: 6px;
+  border-width: 1px;
+  border-color: $stage;
+}
+
+.hit {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  height: 2px;
+  background-color: $stageText;
+}

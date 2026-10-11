@@ -1,0 +1,49 @@
+@use '../../theme/tokens' as *;
+
+@each $name, $value in $colors {
+  .tone-#{$name} {
+    color: $value;
+  }
+}
+
+.display {
+  font-family: Rubik_700Bold;
+  font-size: 30px;
+  line-height: 36px;
+}
+
+.headline {
+  font-family: Rubik_700Bold;
+  font-size: 24px;
+  line-height: 32px;
+}
+
+.title {
+  font-family: Rubik_500Medium;
+  font-size: 20px;
+  line-height: 28px;
+}
+
+.bodyLarge {
+  font-family: Rubik_400Regular;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.body {
+  font-family: Rubik_400Regular;
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.label {
+  font-family: Rubik_500Medium;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.caption {
+  font-family: Rubik_400Regular;
+  font-size: 13px;
+  line-height: 18px;
+}

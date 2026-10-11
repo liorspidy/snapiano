@@ -1,0 +1,95 @@
+@use '../../theme/tokens' as *;
+
+.trigger {
+  height: 56px;
+  justify-content: flex-end;
+  padding-bottom: 6px;
+  padding-start: 14px;
+  padding-end: 44px;
+  background-color: $surface;
+  border-radius: $radius-m;
+  border: 1px solid $borderStrong;
+}
+
+.compactTrigger {
+  height: $touch-min;
+  min-width: 88px;
+  justify-content: center;
+  padding-bottom: 0;
+  padding-start: 12px;
+  padding-end: 12px;
+}
+
+.open {
+  border-width: 2px;
+  border-color: $ink;
+}
+
+.invalid {
+  border-color: $error;
+}
+
+.label {
+  position: absolute;
+  start: 14px;
+  color: $inkMuted;
+  font-family: Rubik_400Regular;
+}
+
+.valueRow {
+  flex-direction: row;
+  align-items: center;
+  gap: $space-s;
+}
+
+.value {
+  line-height: 22px;
+  flex-shrink: 1;
+}
+
+.chevron {
+  position: absolute;
+  end: 14px;
+  top: 0;
+  bottom: 0;
+  justify-content: center;
+}
+
+.menu {
+  position: absolute;
+  padding: 6px;
+  max-height: 264px;
+  background-color: $surface;
+  border-radius: $radius-m;
+  border: 1px solid $borderStrong;
+  overflow: hidden;
+}
+
+.option {
+  min-height: $touch-min;
+  flex-direction: row;
+  align-items: center;
+  gap: $space-s;
+  padding: 0 12px;
+  border-radius: $radius-s;
+}
+
+.optionOn {
+  background-color: $ground;
+}
+
+.optionText {
+  flex: 1;
+}
+
+.optionTextOn {
+  font-family: Rubik_700Bold;
+}
+
+.backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}

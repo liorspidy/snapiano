@@ -1,0 +1,37 @@
+@use '../../theme/tokens' as *;
+
+.wrap {
+  align-items: center;
+  gap: $space-s;
+  padding-vertical: 48px;
+  padding-horizontal: $space-xl;
+}
+
+.illustration {
+  margin-bottom: $space-s;
+}
+
+.icon {
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: $space-xs;
+  border-radius: 28px;
+  background-color: $ground;
+}
+
+.title {
+  text-align: center;
+}
+
+.description {
+  text-align: center;
+  max-width: 320px;
+}
+
+.action {
+  align-self: stretch;
+  align-items: center;
+  margin-top: $space-m;
+}

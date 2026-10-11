@@ -1,0 +1,36 @@
+@use '../../theme/tokens' as *;
+
+.box {
+  height: 56px;
+  background-color: $surface;
+  border-radius: $radius-m;
+  border: 1px solid $borderStrong;
+  justify-content: flex-end;
+}
+
+.focused {
+  border-width: 2px;
+  border-color: $ink;
+}
+
+.invalid {
+  border-color: $error;
+}
+
+.label {
+  position: absolute;
+  start: 14px;
+  color: $inkMuted;
+  font-family: Rubik_400Regular;
+}
+
+.input {
+  height: 100%;
+  padding-top: 20px;
+  padding-bottom: 0;
+  padding-start: 14px;
+  padding-end: 14px;
+  color: $ink;
+  font-family: Rubik_400Regular;
+  font-size: 16px;
+}

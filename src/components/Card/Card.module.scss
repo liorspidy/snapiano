@@ -1,0 +1,17 @@
+@use '../../theme/tokens' as *;
+
+.card {
+  background-color: $surface;
+  border: 1px solid $line;
+  border-radius: $radius-l;
+  padding-vertical: $space-xs;
+  padding-horizontal: $space-s;
+}
+
+.interactive {
+  border-color: $borderStrong;
+}
+
+.pressed {
+  transform: scale(0.96);
+}

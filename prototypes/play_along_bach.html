@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>נגינה עם הדף הסרוק</title>
 <style>
-:root{--ink:#1A2233;--muted:#566072;--rh:#2F5FE8;--lh:#F2A23A;--stage:#151B28;--raised:#232B3B}
+:root{--ink:#0B1733;--muted:#4D5A75;--rh:#2F5FE8;--lh:#F2A23A;--stage:#07122A;--raised:#15223D}
 *{box-sizing:border-box} body{margin:0;background:var(--stage);color:#fff;font-family:system-ui,sans-serif}
 .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 12px}
 button{min-height:48px;min-width:48px;padding:0 14px;border:0;border-radius:12px;background:var(--raised);color:#fff;font:inherit;cursor:pointer}
@@ -242,7 +242,7 @@ function draw() {
     sheet.appendChild(d);
   });
   for (const m in keyEl) { const k2 = keyEl[m]; k2.style.background = ''; k2.textContent = ''; }
-  now.forEach(n => { const k2 = keyEl[n.m]; if (k2) { k2.style.background = n.h === 'R' ? RH : LH; k2.textContent = nm(n.m); k2.style.color = n.h === 'R' ? '#fff' : '#1A2233'; } });
+  now.forEach(n => { const k2 = keyEl[n.m]; if (k2) { k2.style.background = n.h === 'R' ? RH : LH; k2.textContent = nm(n.m); k2.style.color = n.h === 'R' ? '#fff' : '#0B1733'; } });
   const need = mode === 'wait' ? now.filter(n => !pressed.has(n.m)) : [];
   const words = h => need.filter(n => n.h === h).map(n => nm(n.m)).join(' ו');
   document.getElementById('status').textContent = msg || (mode === 'wait'

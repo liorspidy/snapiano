@@ -1,0 +1,116 @@
+@use '../theme/tokens' as *;
+
+.stage {
+  flex: 1;
+  background-color: $stage;
+  padding-horizontal: $space-l;
+  gap: $space-s;
+}
+
+.controls {
+  flex-direction: row;
+  align-items: center;
+  gap: $space-l;
+  padding-top: $space-s;
+}
+
+.group {
+  flex-direction: row;
+  align-items: center;
+  gap: $space-s;
+}
+
+.play {
+  width: $touch-min;
+  height: $touch-min;
+  border-radius: $radius-m;
+  background-color: $surface;
+  align-items: center;
+  justify-content: center;
+}
+
+.chip {
+  min-height: $touch-min;
+  min-width: $touch-min;
+  padding-horizontal: $space-m;
+  border-radius: $radius-m;
+  background-color: $stageRaised;
+  align-items: center;
+  justify-content: center;
+}
+
+.sheet {
+  flex: 3;
+  background-color: $surface;
+  border-radius: $radius-m;
+  overflow: hidden;
+}
+
+.mark {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  opacity: 0.55;
+}
+
+.cursor {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background-color: $ink;
+}
+
+.falling {
+  flex: 2;
+}
+
+.keys {
+  flex: 2;
+  margin-bottom: $space-s;
+}
+
+.close {
+  width: $touch-min;
+  height: $touch-min;
+  align-items: center;
+  justify-content: center;
+}
+
+.pressed {
+  transform: scale(0.96);
+}
+
+.chipOn {
+  background-color: $surface;
+}
+
+.chipLabel {
+  color: $stageText;
+}
+
+.chipLabelOn {
+  color: $ink;
+}
+
+.message {
+  color: $stageText;
+  padding: $space-l;
+}
+
+.bpm {
+  color: $stageText;
+  min-width: 64px;
+  text-align: center;
+  font-variant: tabular-nums;
+}
+
+.lineLabel {
+  color: $stageText;
+  flex: 1;
+}
+
+.line {
+  direction: ltr;
+}

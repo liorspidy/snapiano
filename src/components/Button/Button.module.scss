@@ -1,0 +1,92 @@
+@use '../../theme/tokens' as *;
+
+.button {
+  align-self: stretch;
+  min-height: $touch-min;
+  padding-horizontal: $space-xl;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: $space-s;
+  border: 1px solid transparent;
+  border-radius: $radius-m;
+}
+
+.primary {
+  min-height: $touch-primaryHeight;
+  border-radius: $radius-l;
+  background-color: $ink;
+}
+
+.secondary {
+  background-color: $surface;
+  border-color: $borderStrong;
+}
+
+.destructive {
+  background-color: rgba($error, 0.1);
+  border-color: rgba($error, 0.3);
+}
+
+.small {
+  min-height: $touch-min;
+  padding-horizontal: $space-l;
+}
+
+.fitContent {
+  align-self: flex-start;
+}
+
+.disabled {
+  opacity: 0.5;
+}
+
+.primaryDisabled {
+  background-color: $line;
+}
+
+.pressed {
+  transform: scale(0.96);
+}
+
+.content {
+  flex-direction: row;
+  align-items: center;
+  gap: $space-s;
+}
+
+.contentHidden {
+  opacity: 0;
+}
+
+.spinner {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.labelPrimary {
+  font-family: Rubik_700Bold;
+  color: $surface;
+}
+
+.labelPrimaryDisabled {
+  color: $inkSecondary;
+}
+
+.labelSecondary {
+  color: $ink;
+}
+
+.labelDestructive {
+  color: $error;
+}
+
+.icon {
+  align-items: center;
+  justify-content: center;
+}

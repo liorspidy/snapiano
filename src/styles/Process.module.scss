@@ -1,0 +1,22 @@
+@use '../theme/tokens' as *;
+
+.screen {
+  flex: 1;
+  background-color: $ground;
+  padding-horizontal: $space-l;
+}
+
+.body {
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: $space-m;
+}
+
+.actions {
+  padding-bottom: $space-l;
+}
+
+.centered {
+  text-align: center;
+}

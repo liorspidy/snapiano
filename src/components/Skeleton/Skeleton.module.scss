@@ -1,0 +1,5 @@
+@use '../../theme/tokens' as *;
+
+.skeleton {
+  background-color: $line;
+}

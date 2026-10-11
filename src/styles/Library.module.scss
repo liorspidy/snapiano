@@ -1,0 +1,61 @@
+@use '../theme/tokens' as *;
+
+.screen {
+  flex: 1;
+  background-color: $ground;
+  padding-horizontal: $space-l;
+}
+
+.header {
+  padding-top: $space-xl;
+  gap: $space-xs;
+  padding-bottom: $space-m;
+}
+
+.titleRow {
+  flex-direction: row;
+  align-items: center;
+}
+
+.account {
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+}
+
+.list {
+  gap: $space-s;
+}
+
+.empty {
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  padding-horizontal: $space-xl;
+}
+
+.row {
+  min-height: 72px;
+  justify-content: center;
+  background-color: $surface;
+  border-radius: 12px;
+  padding-horizontal: $space-l;
+}
+
+.actions {
+  gap: $space-s;
+  padding-bottom: $space-l;
+}
+
+.grow {
+  flex: 1;
+}
+
+.centered {
+  text-align: center;
+}
+
+.pressed {
+  transform: scale(0.96);
+}
