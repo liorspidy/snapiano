@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ניסוי הקשבה בזמן אמת</title>
+<style>
+:root{--ink:#1A2233;--muted:#566072;--ground:#EDEFF3;--rh:#2F5FE8;--lh:#F2A23A;--border:#7A8394}
+body{margin:0;font-family:system-ui,sans-serif;background:var(--ground);color:var(--ink)}
+main{max-width:860px;margin:0 auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button{min-height:48px;padding:0 18px;border-radius:12px;border:1px solid var(--border);background:#fff;font:inherit;font-size:16px;cursor:pointer}
+button.primary{background:var(--ink);color:#fff;border:0}
+button[aria-pressed="true"]{outline:3px solid var(--ink)}
+#status{font-size:20px;font-weight:600;min-height:30px}
+#detail{color:var(--muted);font-size:14px;min-height:20px}
+.meter{height:8px;border-radius:4px;background:#d8dde5;overflow:hidden;flex:1;min-width:120px}
+.meter i{display:block;height:100%;width:0;background:var(--ink)}
+#kb{position:relative;height:120px;direction:ltr;background:#fff;border-radius:8px}
+.w,.b{position:absolute;top:0;box-sizing:border-box}
+.w{height:120px;border:1px solid #9AA3B2;border-top:0;border-radius:0 0 6px 6px;background:#fff}
+.b{height:72px;background:#1A2233;border-radius:0 0 5px 5px;z-index:2}
+.rh{background:var(--rh)!important}.lh{background:var(--lh)!important}
+.ok{box-shadow:inset 0 -10px 0 #1D7A46}
+</style>
+</head>
+<body>
+<main>
+  <h1 style="margin:0;font-size:22px">ניסוי הקשבה בזמן אמת</h1>
+  <p style="margin:0;color:var(--muted)">הכול רץ בדפדפן שלך. שום צליל לא נשלח לשום מקום.</p>
+  <div class="row">
+    <button id="mic" class="primary">הקשבה במיקרופון</button>
+    <button id="midi">חיבור פסנתר MIDI</button>
+    <button id="restart">מההתחלה</button>
+    <div class="meter" aria-label="עוצמת קול"><i id="level"></i></div>
+  </div>
+  <div id="status" role="status">בחר מיקרופון או MIDI כדי להתחיל</div>
+  <div id="detail"></div>
+  <div id="kb" aria-label="מקלדת"></div>
+  <p style="margin:0;color:var(--muted);font-size:14px">שיר השמחה. כחול = יד ימין, כתום = יד שמאל. נגן את המקשים הצבועים.</p>
+</main>
+<script>
+// ---- the piece: each step is the set of keys that should start together ----
+const STEPS = [[48,55,64],[64],[65],[67],[55,59,67],[65],[64],[62],[48,55,60],[60],[62],[64],[55,59,64],[62],[62]];
+const SOLF = ['דו','דו דיאז','רה','רה דיאז','מי','פה','פה דיאז','סול','סול דיאז','לה','לה דיאז','סי'];
+const nameOf = m => SOLF[m % 12];
+const hand = m => m >= 60 ? 'rh' : 'lh';
+let step = 0;
+
+// ---- keyboard C3..C5 ----
+const kb = document.getElementById('kb'), keys = {};
+(function build() {
+  const whites = []; for (let m = 48; m <= 72; m++) if (![1,3,6,8,10].includes(m % 12)) whites.push(m);
+  const W = 100 / whites.length;
+  whites.forEach((m, i) => { const d = document.createElement('div'); d.className = 'w'; d.style.left = (i*W)+'%'; d.style.width = W+'%'; kb.appendChild(d); keys[m] = d; });
+  for (let m = 48; m <= 72; m++) if ([1,3,6,8,10].includes(m % 12)) {
+    const i = whites.indexOf(m - 1) + 1, d = document.createElement('div');
+    d.className = 'b'; d.style.left = (i*W - W*0.29)+'%'; d.style.width = (W*0.58)+'%'; kb.appendChild(d); keys[m] = d;
+  }
+})();
+function paint(found = []) {
+  Object.values(keys).forEach(k => k.classList.remove('rh','lh','ok'));
+  STEPS[step].forEach(m => { keys[m].classList.add(hand(m)); if (found.includes(m)) keys[m].classList.add('ok'); });
+}
+function say(text, detail = '') { document.getElementById('status').textContent = text; document.getElementById('detail').textContent = detail; }
+function waiting() {
+  const r = STEPS[step].filter(m => m >= 60).map(nameOf), l = STEPS[step].filter(m => m < 60).map(nameOf);
+  const parts = []; if (r.length) parts.push(r.join(' ו') + ' ביד ימין'); if (l.length) parts.push(l.join(' ו') + ' ביד שמאל');
+  say('מחכה לך: ' + parts.join(', '));
+  paint();
+}
+function advance() { step = (step + 1) % STEPS.length; waiting(); }
+document.getElementById('restart').onclick = () => { step = 0; waiting(); };
+
+// ---- MIDI: exact and instant ----
+document.getElementById('midi').onclick = async () => {
+  if (!navigator.requestMIDIAccess) { say('הדפדפן הזה לא תומך ב-MIDI', 'נסה Chrome או Edge במחשב'); return; }
+  const access = await navigator.requestMIDIAccess();
+  let held = new Set(), timer = null;
+  const onMsg = e => {
+    const [st, note, vel] = e.data;
+    if ((st & 0xf0) !== 0x90 || vel === 0) return;
+    held.add(note);
+    clearTimeout(timer);
+    timer = setTimeout(() => {  // notes struck within 120 ms count as one chord
+      const want = STEPS[step], got = [...held]; held = new Set();
+      const missing = want.filter(m => !got.includes(m)), extra = got.filter(m => !want.includes(m));
+      if (!missing.length && !extra.length) { say('נכון'); setTimeout(advance, 250); }
+      else say('לא בדיוק', (extra.length ? 'ניגנת ' + extra.map(nameOf).join(', ') + '. ' : '') + (missing.length ? 'חסר ' + missing.map(nameOf).join(', ') : ''));
+    }, 120);
+  };
+  const inputs = [...access.inputs.values()];
+  inputs.forEach(i => i.onmidimessage = onMsg);
+  document.getElementById('midi').setAttribute('aria-pressed', 'true');
+  say(inputs.length ? 'הפסנתר מחובר: ' + inputs[0].name : 'לא נמצא פסנתר. חבר כבל USB ונסה שוב');
+  if (inputs.length) setTimeout(waiting, 800);
+};
+
+// ---- microphone: score-informed check, same algorithm as listen_check.py ----
+const N = 8192, HARM = 8;
+const T = { minDb: 4.0, near: 1.5, far: 0.5, odd: 0.45, lower: 0.6 };
+const hz = m => 440 * Math.pow(2, (m - 69) / 12);
+let ctx, big, small, sr, bigBuf, smallBuf, prevSmall = null, fluxHist = [], history = [], pending = null;
+
+function harmonicBins(notes) {
+  const s = new Set();
+  notes.forEach(m => { for (let h = 1; h <= HARM; h++) { const b = Math.round(hz(m) * h * N / sr); for (let k = b - 2; k <= b + 2; k++) s.add(k); } });
+  return s;
+}
+function gain(s0, s1, floor, broad, m, oddOnly, skip) {
+  let total = 0, weight = 0;
+  for (let h = 1; h <= HARM; h++) {
+    if (oddOnly && h % 2 === 0) continue;
+    const f = hz(m) * h; if (f > 6000) break;
+    const i = Math.round(f * N / sr); if (i >= s1.length - 8 || i < 8) continue;
+    if (skip && skip.has(i)) continue;
+    let j = i - 1; for (let k = i; k <= i + 1; k++) if (s1[k] > s1[j]) j = k;
+    const after = s1[j], before = Math.max(s0[i-1], s0[i], s0[i+1]);
+    let side = 0; for (let k = 4; k <= 7; k++) side += s1[j-k] + s1[j+k]; side /= 8;
+    const w = 1 / Math.sqrt(h); weight += w;
+    if (after > floor + 12 && after - side > 6) total += w * Math.min(30, Math.max(0, after - before - broad));
+  }
+  return weight ? total / weight : 0;
+}
+function median(a) { const b = Array.from(a).sort((x, y) => x - y); return b[b.length >> 1]; }
+function check(s0, s1, expected) {
+  const lo = Math.round(80 * N / sr), hi = Math.round(5000 * N / sr);
+  const floor = median(s1.subarray(lo, hi));
+  const rise = new Float32Array(hi - lo); for (let k = lo; k < hi; k++) rise[k - lo] = Math.max(0, s1[k] - s0[k]);
+  const broad = median(rise);
+  const g = (m, odd = false, skip = null) => gain(s0, s1, floor, broad, m, odd, skip);
+  const shared = harmonicBins(expected), found = [];
+  for (const m of expected) {
+    const d = g(m);
+    const near = [m - 1, m + 1].filter(n => !expected.includes(n)).map(n => g(n, false, shared));
+    const far = [m - 2, m + 2].filter(n => !expected.includes(n)).map(n => g(n, false, shared));
+    const lower = expected.includes(m - 12) ? 0 : g(m - 12, true, shared);
+    if (d > T.minDb && near.every(r => d > r + T.near) && far.every(r => d > r + T.far) && g(m, true) > T.odd * d && lower < T.lower * d) found.push(m);
+  }
+  let guess = null;
+  if (found.length < expected.length) { let best = -1; for (let m = 36; m <= 96; m++) { const sc = g(m) + g(m, true); if (sc > best) { best = sc; guess = m; } } }
+  return { ok: found.length === expected.length, found, guess };
+}
+
+document.getElementById('mic').onclick = async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+    ctx = new AudioContext(); sr = ctx.sampleRate;
+    const src = ctx.createMediaStreamSource(stream);
+    big = ctx.createAnalyser(); big.fftSize = N; big.smoothingTimeConstant = 0;
+    small = ctx.createAnalyser(); small.fftSize = 2048; small.smoothingTimeConstant = 0;
+    src.connect(big); src.connect(small);
+    bigBuf = new Float32Array(big.frequencyBinCount); smallBuf = new Float32Array(small.frequencyBinCount);
+    document.getElementById('mic').setAttribute('aria-pressed', 'true');
+    waiting();
+    setInterval(tick, 10);
+  } catch (e) { say('אין גישה למיקרופון', 'אשר גישה למיקרופון בדפדפן ונסה שוב'); }
+};
+
+function tick() {
+  big.getFloatFrequencyData(bigBuf);
+  const snap = Float32Array.from(bigBuf, v => Math.max(-160, v));
+  history.push({ t: ctx.currentTime, s: snap }); if (history.length > 60) history.shift();
+
+  small.getFloatFrequencyData(smallBuf);
+  let flux = 0, level = 0;
+  if (prevSmall) for (let k = 5; k < 700; k++) { const v = Math.max(-140, smallBuf[k]); flux += Math.max(0, v - prevSmall[k]); level = Math.max(level, v); }
+  prevSmall = Float32Array.from(smallBuf, v => Math.max(-140, v));
+  document.getElementById('level').style.width = Math.max(0, Math.min(100, (level + 100) * 1.4)) + '%';
+  const thr = fluxHist.length > 10 ? median(fluxHist.slice(-40)) * 2.5 + 40 : 1e9;
+  fluxHist.push(flux); if (fluxHist.length > 200) fluxHist.shift();
+
+  if (!pending && flux > thr) {
+    // onset: remember the spectrum from just before it, decide when the window has filled with the new sound
+    const before = history.length > 4 ? history[history.length - 4].s : snap;
+    pending = { before, at: ctx.currentTime + N / sr + 0.02 };
+  }
+  if (pending && ctx.currentTime >= pending.at) {
+    const r = check(pending.before, snap, STEPS[step]);
+    pending = null;
+    if (r.ok) { paint(r.found); say('נכון'); setTimeout(advance, 250); }
+    else { paint(r.found); say(r.guess != null ? 'שמעתי ' + nameOf(r.guess) + '. נגן את המקש הצבוע' : 'לא שמעתי את כל התווים. נסה שוב'); }
+  }
+}
+</script>
+</body>
+</html>
