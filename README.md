@@ -9,3 +9,4 @@ npx expo start
 - Design: `../.claude/skills/piano-app-design/SKILL.md`, tokens in `src/theme/tokens.ts`.
 - Text: edit the table in `tools/make_locales.py`, then `python tools/make_locales.py`.
 - `prototypes/play_along_bach.html`: open in Chrome (MIDI and microphone need Chrome or Edge).
+# snapiano
