@@ -1,32 +1,60 @@
 import { useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthProvider';
-import { Button } from '@/components/Button/Button';
 import { GoogleIcon } from '@/components/GoogleIcon/GoogleIcon';
-import { Input } from '@/components/Input/Input';
 import { LanguagePicker } from '@/components/LanguagePicker/LanguagePicker';
 import { Logo } from '@/components/Logo/Logo';
-import { Text } from '@/components/Text/Text';
+import { PasswordChecklist } from '@/components/PasswordChecklist/PasswordChecklist';
 import { Wordmark } from '@/components/Wordmark/Wordmark';
+import { Button } from '@/ui/Button/Button';
+import { Input } from '@/ui/Input/Input';
+import { Text } from '@/ui/Text/Text';
 import classes from '@/styles/Login.module.scss';
+
+type Mode = 'login' | 'signup';
 
 export default function Login() {
   const { t } = useTranslation();
-  const { signInWithGoogle, sendLink } = useAuth();
+  const { signInWithGoogle, logIn, signUp } = useAuth();
+  const [mode, setMode] = useState<Mode>('login');
   const [email, setEmail] = useState('');
-  const [sentTo, setSentTo] = useState<string>();
-  const [error, setError] = useState<string>();
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState<{ email?: string; password?: string; form?: string }>({});
+  const [confirmEmail, setConfirmEmail] = useState<string>();
+  const [sending, setSending] = useState(false);
 
-  const run = async (fn: () => Promise<void>) => {
-    setError(undefined);
-    try { await fn(); } catch { setError(t('error.generic')); }
-  };
-  const send = () => {
+  const toggle = () => { setMode(mode === 'login' ? 'signup' : 'login'); setErrors({}); setConfirmEmail(undefined); };
+
+  const submit = async () => {
     const address = email.trim();
-    if (!/^\S+@\S+\.\S+$/.test(address)) return setError(t('auth.invalidEmail'));
-    run(async () => { await sendLink(address); setSentTo(address); });
+    const next = {
+      email: !address ? t('auth.errEmailRequired') : !/^\S+@\S+\.\S+$/.test(address) ? t('auth.invalidEmail') : undefined,
+      password: password.length < 8 ? t('auth.errPassword') : undefined,
+    };
+    setErrors(next);
+    setConfirmEmail(undefined);
+    if (next.email || next.password) return;
+    setSending(true);
+    try {
+      if (mode === 'login') await logIn(address, password);
+      else if ((await signUp(address, password)).needsConfirmation) setConfirmEmail(address);
+    } catch (e) {
+      const wrong = mode === 'login' && /invalid login credentials/i.test(String((e as Error).message));
+      setErrors({ form: t(wrong ? 'auth.wrongCredentials' : 'error.generic') });
+    }
+    setSending(false);
+  };
+
+  const google = async () => {
+    setErrors({});
+    try {
+      await signInWithGoogle();
+    } catch (e) {
+      const notSetUp = /unsupported provider|provider is not enabled/i.test(String((e as Error).message));
+      setErrors({ form: t(notSetUp ? 'auth.googleUnavailable' : 'error.generic') });
+    }
   };
 
   return (
@@ -39,7 +67,7 @@ export default function Login() {
             <Wordmark height={44} label={t('app.name')} />
             <Text variant="body" tone="inkSecondary" style={classes.tagline}>{t('app.tagline')}</Text>
           </View>
-          <Button secondary onPress={() => run(signInWithGoogle)}>
+          <Button secondary onPress={google}>
             <GoogleIcon size={20} />
             <Text variant="label">{t('auth.google')}</Text>
           </Button>
@@ -55,13 +83,30 @@ export default function Login() {
             keyboardType="email-address"
             autoCapitalize="none"
             autoComplete="email"
-            error={error && !sentTo ? error : undefined}
+            error={errors.email}
           />
-          {sentTo && <Text variant="body" tone="success" style={classes.message}>{t('auth.linkSent', { email: sentTo })}</Text>}
+          <Input
+            label={t('auth.password')}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            autoCapitalize="none"
+            autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+            error={errors.password}
+          />
+          {mode === 'signup' && <PasswordChecklist value={password} />}
+          <View style={classes.toggle}>
+            <Text variant="body" tone="inkSecondary">{t(mode === 'login' ? 'auth.newToApp' : 'auth.haveAccount')}</Text>
+            <Pressable accessibilityRole="button" onPress={toggle} style={({ pressed }) => [classes.link, pressed && classes.pressed]}>
+              <Text variant="label" style={classes.linkText}>{t(mode === 'login' ? 'auth.createAccount' : 'auth.logIn')}</Text>
+            </Pressable>
+          </View>
         </View>
         <View style={classes.bottom}>
+          {confirmEmail && <Text variant="body" tone="success" accessibilityRole="alert" style={classes.message}>{t('auth.checkEmail', { email: confirmEmail })}</Text>}
+          {errors.form && <Text variant="body" tone="error" accessibilityRole="alert" style={classes.message}>{errors.form}</Text>}
           <Text variant="caption" tone="inkMuted" style={classes.terms}>{t('auth.terms')}</Text>
-          <Button onPress={send}>{t('auth.sendLink')}</Button>
+          <Button onPress={submit} isPending={sending} pending={t('auth.sending')}>{t(mode === 'login' ? 'auth.login' : 'auth.continue')}</Button>
         </View>
       </ScrollView>
     </SafeAreaView>

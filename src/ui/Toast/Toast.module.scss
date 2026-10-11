@@ -1,0 +1,35 @@
+@use '../../theme/tokens' as *;
+
+.viewport {
+  position: absolute;
+  left: $space-l;
+  right: $space-l;
+  align-items: center;
+  gap: 10px;
+}
+
+.toast {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding-vertical: $space-m;
+  padding-horizontal: 20px;
+  background-color: $ink;
+  border-radius: $radius-l;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background-color: $inkMuted;
+}
+
+.dotSuccess {
+  background-color: $success;
+}
+
+.message {
+  color: $surface;
+  flex-shrink: 1;
+}

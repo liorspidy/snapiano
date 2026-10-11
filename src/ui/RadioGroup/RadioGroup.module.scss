@@ -1,0 +1,43 @@
+@use '../../theme/tokens' as *;
+
+.field {
+  gap: $space-s;
+}
+
+.options {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: $space-s;
+}
+
+.option {
+  min-height: $touch-min;
+  padding-horizontal: 20px;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-m;
+  border: 1px solid $borderStrong;
+  background-color: $surface;
+}
+
+.optionOn {
+  border-color: $ink;
+  background-color: $ink;
+}
+
+.optionError {
+  border-color: $error;
+}
+
+.optionOnError {
+  border-color: $error;
+  background-color: $error;
+}
+
+.pressed {
+  transform: scale(0.96);
+}
+
+.labelOn {
+  color: $surface;
+}

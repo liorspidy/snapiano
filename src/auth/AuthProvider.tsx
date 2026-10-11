@@ -9,12 +9,14 @@ WebBrowser.maybeCompleteAuthSession();
 
 // Must also be listed under Supabase > Authentication > URL Configuration > Redirect URLs.
 const redirectTo = Linking.createURL('auth');
+if (__DEV__) console.log(`[auth] add this exact address to Supabase > Authentication > URL Configuration > Redirect URLs: ${redirectTo}`);
 
 type Auth = {
   session: Session | null;
   loading: boolean;
   signInWithGoogle: () => Promise<void>;
-  sendLink: (email: string) => Promise<void>;
+  logIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<{ needsConfirmation: boolean }>;
   signOut: () => Promise<void>;
 };
 const Ctx = createContext<Auth>(null as never);
@@ -37,7 +39,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => { setSession(data.session); setLoading(false); });
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
-    // Magic link opened from the email app.
+    // The app was opened by a sign-in link (cold start).
+    Linking.getInitialURL().then((url) => { if (url) sessionFromUrl(url).catch(() => {}); });
+    // A sign-in or confirmation link opened while the app is running.
     const link = Linking.addEventListener('url', ({ url }) => { sessionFromUrl(url).catch(() => {}); });
     // Only refresh tokens while the app is in the foreground.
     const app = AppState.addEventListener('change', (st) =>
@@ -54,12 +58,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (res.type === 'success') await sessionFromUrl(res.url);
   };
 
-  const sendLink = async (email: string) => {
-    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: redirectTo } });
+  const logIn = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
+  };
+
+  const signUp = async (email: string, password: string) => {
+    const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: redirectTo } });
+    if (error) throw error;
+    return { needsConfirmation: !data.session };
   };
 
   const signOut = async () => { await supabase.auth.signOut(); };
 
-  return <Ctx.Provider value={{ session, loading, signInWithGoogle, sendLink, signOut }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ session, loading, signInWithGoogle, logIn, signUp, signOut }}>{children}</Ctx.Provider>;
 }

@@ -1,0 +1,34 @@
+@use '../../theme/tokens' as *;
+
+.wrap {
+  gap: $space-s;
+}
+
+.row {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: $space-s;
+}
+
+.rowContent {
+  flex: 1;
+}
+
+.remove {
+  width: $touch-min;
+  height: 56px;
+  align-items: center;
+  justify-content: center;
+}
+
+.add {
+  min-height: $touch-min;
+  align-self: flex-start;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+.pressed {
+  transform: scale(0.96);
+}

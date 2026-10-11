@@ -11,7 +11,7 @@
 }
 
 .language {
-  align-self: flex-end;
+  align-self: flex-start;
   padding-top: $space-s;
 }
 
@@ -34,10 +34,6 @@
   text-align: center;
 }
 
-.google {
-  margin-top: $space-s;
-}
-
 .divider {
   flex-direction: row;
   align-items: center;
@@ -48,6 +44,23 @@
   flex: 1;
   height: 1px;
   background-color: $line;
+}
+
+.toggle {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: $space-xs;
+}
+
+.link {
+  min-height: $touch-min;
+  justify-content: center;
+}
+
+.linkText {
+  text-decoration: underline;
 }
 
 .message {
@@ -61,4 +74,8 @@
 
 .terms {
   text-align: center;
+}
+
+.pressed {
+  transform: scale(0.96);
 }

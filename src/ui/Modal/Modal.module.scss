@@ -1,0 +1,87 @@
+@use '../../theme/tokens' as *;
+
+.root {
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+.rtl {
+  direction: rtl;
+}
+
+.rootSheet {
+  justify-content: flex-end;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(#000, 0.6);
+}
+
+.dialog {
+  width: 100%;
+  max-height: 86%;
+  padding: $space-l;
+  border: 1px solid $line;
+  border-radius: $radius-l;
+  background-color: $surface;
+}
+
+.dialogCentered {
+  width: 92%;
+}
+
+.sheet {
+  max-height: 92%;
+  padding-vertical: $space-xl;
+  border-radius: 0;
+  border-top-left-radius: $radius-sheet;
+  border-top-right-radius: $radius-sheet;
+}
+
+.header {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $space-xl;
+}
+
+.titleRow {
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  gap: $space-s;
+}
+
+.titleIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.close {
+  width: $touch-min;
+  height: $touch-min;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-m;
+  margin-start: auto;
+}
+
+.pressed {
+  background-color: $ground;
+}
+
+.body {
+  flex-shrink: 1;
+}
+
+.footer {
+  margin-top: $space-l;
+  padding-top: $space-l;
+  border-top: 1px solid $line;
+}

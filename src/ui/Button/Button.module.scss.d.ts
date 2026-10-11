@@ -1,0 +1,22 @@
+import type { ImageStyle, TextStyle, ViewStyle } from 'react-native';
+type Style = ViewStyle & TextStyle & ImageStyle;
+declare const classes: {
+  readonly 'button': Style;
+  readonly 'primary': Style;
+  readonly 'secondary': Style;
+  readonly 'destructive': Style;
+  readonly 'small': Style;
+  readonly 'fitContent': Style;
+  readonly 'disabled': Style;
+  readonly 'primaryDisabled': Style;
+  readonly 'pressed': Style;
+  readonly 'content': Style;
+  readonly 'contentHidden': Style;
+  readonly 'spinner': Style;
+  readonly 'labelPrimary': Style;
+  readonly 'labelPrimaryDisabled': Style;
+  readonly 'labelSecondary': Style;
+  readonly 'labelDestructive': Style;
+  readonly 'icon': Style;
+};
+export default classes;

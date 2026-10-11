@@ -1,5 +1,18 @@
 @use '../theme/tokens' as *;
 
+.root {
+  flex: 1;
+  background-color: $ground;
+}
+
+.rtl {
+  direction: rtl;
+}
+
+.ltr {
+  direction: ltr;
+}
+
 .screen {
   background-color: $ground;
 }

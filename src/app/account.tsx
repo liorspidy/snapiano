@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Alert, ScrollView, TextInput, View } from 'react-native';
+import { Alert, InteractionManager, ScrollView, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthProvider';
-import { Button } from '@/components/Button/Button';
+import { BackButton } from '@/components/BackButton/BackButton';
+import { Button } from '@/ui/Button/Button';
 import { LanguagePicker } from '@/components/LanguagePicker/LanguagePicker';
-import { Text } from '@/components/Text/Text';
+import { Text } from '@/ui/Text/Text';
 import { supabase } from '@/lib/supabase';
 import { color } from '@/theme/tokens';
 import classes from '@/styles/Account.module.scss';
@@ -18,7 +19,10 @@ export default function Account() {
   const [note, setNote] = useState<{ text: string; ok: boolean }>();
 
   const loadPlan = () => supabase.rpc('my_entitlements').then(({ data }) => setPlan(data?.plan));
-  useEffect(() => { loadPlan(); }, []);
+  useEffect(() => {
+    const task = InteractionManager.runAfterInteractions(loadPlan);
+    return () => task.cancel();
+  }, []);
 
   const redeem = async () => {
     const { error } = await supabase.rpc('redeem_code', { p_code: code });
@@ -37,8 +41,13 @@ export default function Account() {
 
   return (
     <SafeAreaView style={classes.screen}>
+      <View style={classes.header}>
+        <View style={classes.titleRow}>
+          <Text variant="display" accessibilityRole="header" style={classes.grow}>{t('account.title')}</Text>
+          <BackButton />
+        </View>
+      </View>
       <ScrollView contentContainerStyle={classes.content}>
-        <Text variant="display" accessibilityRole="header">{t('account.title')}</Text>
         <Text variant="bodyLarge" tone="inkSecondary">{session?.user.email}</Text>
         {plan && <Text variant="body" tone="inkSecondary">{t('account.plan')}: {plan}</Text>}
 

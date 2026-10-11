@@ -20,5 +20,6 @@ declare const classes: {
   readonly 'bpm': Style;
   readonly 'lineLabel': Style;
   readonly 'line': Style;
+  readonly 'playIcon': Style;
 };
 export default classes;

@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { Image, Pressable, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import { Pause, Play, X } from 'lucide-react-native';
+import { Minus, Pause, Play, Plus, X } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { FallingNotes } from '@/components/FallingNotes/FallingNotes';
 import { Keyboard } from '@/components/Keyboard/Keyboard';
-import { Text } from '@/components/Text/Text';
+import { Text } from '@/ui/Text/Text';
 import { playNote } from '@/audio/synth';
 import { loadPiece, Piece } from '@/lib/piece';
 import { color, handColor } from '@/theme/tokens';
@@ -16,11 +16,12 @@ import classes from '@/styles/Practice.module.scss';
 type Hands = 'both' | 'R' | 'L';
 const TICK_MS = 33;
 
-function Chip({ label, on, onPress }: { label: string; on: boolean; onPress: () => void }) {
+function Chip({ label, icon, accessibilityLabel, on, onPress }: { label?: string; icon?: ReactNode; accessibilityLabel?: string; on: boolean; onPress: () => void }) {
   return (
-    <Pressable accessibilityRole="button" accessibilityState={{ selected: on }} onPress={onPress}
+    <Pressable accessibilityRole="button" accessibilityLabel={accessibilityLabel} accessibilityState={{ selected: on }} onPress={onPress}
       style={({ pressed }) => [classes.chip, on && classes.chipOn, pressed && classes.pressed]}>
-      <Text variant="label" style={on ? classes.chipLabelOn : classes.chipLabel}>{label}</Text>
+      {icon}
+      {label && <Text variant="label" style={on ? classes.chipLabelOn : classes.chipLabel}>{label}</Text>}
     </Pressable>
   );
 }
@@ -89,7 +90,7 @@ export default function Practice() {
       <View style={classes.controls}>
         <Pressable accessibilityRole="button" accessibilityLabel={t(playing ? 'practice.pause' : 'practice.play')}
           onPress={() => setPlaying((p) => !p)} style={({ pressed }) => [classes.play, pressed && classes.pressed]}>
-          {playing ? <Pause color={color.ink} size={24} /> : <Play color={color.ink} size={24} />}
+          {playing ? <Pause color={color.ink} size={24} /> : <Play color={color.ink} size={24} style={classes.playIcon} />}
         </Pressable>
         <View style={classes.group}>
           <Chip label={t('practice.both')} on={hands === 'both'} onPress={() => setHands('both')} />
@@ -97,9 +98,9 @@ export default function Practice() {
           <Chip label={t('practice.left')} on={hands === 'L'} onPress={() => setHands('L')} />
         </View>
         <View style={classes.group}>
-          <Chip label="−" on={false} onPress={() => setBpm((b) => Math.max(30, b - 5))} />
+          <Chip icon={<Minus color={color.stageText} size={20} />} accessibilityLabel={t('practice.slower')} on={false} onPress={() => setBpm((b) => Math.max(30, b - 5))} />
           <Text variant="label" style={classes.bpm}>{bpm} {t('practice.bpm')}</Text>
-          <Chip label="+" on={false} onPress={() => setBpm((b) => Math.min(200, b + 5))} />
+          <Chip icon={<Plus color={color.stageText} size={20} />} accessibilityLabel={t('practice.faster')} on={false} onPress={() => setBpm((b) => Math.min(200, b + 5))} />
         </View>
         <Text variant="caption" style={classes.lineLabel}>{t('practice.line', { n: lineNo, total: piece.lines.length })}</Text>
         <Pressable accessibilityRole="button" accessibilityLabel={t('process.back')} onPress={() => router.replace('/')} style={classes.close}>

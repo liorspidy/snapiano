@@ -1,12 +1,12 @@
 // Design tokens for the piano app. Contrast ratios are WCAG 2.x, measured.
 export const color = {
-  ink: '#0B1733',          // brand navy; text and primary buttons; 17.7:1 on surface
-  inkSecondary: '#2C3956', // 11.5:1 on surface
-  inkMuted: '#4D5A75',     // secondary text; 6.9:1 on surface, 6.0:1 on ground
+  ink: '#030E28',          // brand navy (the "Snap" in the wordmark); text and primary buttons; 19.1:1 on surface
+  inkSecondary: '#243049', // 13.2:1 on surface
+  inkMuted: '#47536C',     // secondary text; 6.7:1 on ground
   ground: '#ECEFF5',       // app background
   surface: '#FFFFFF',      // lists, sheets, paper
   line: '#E1E5EB',         // dividers only (decorative)
-  borderStrong: '#717D96', // inputs, secondary buttons; 4.1:1 on surface
+  borderStrong: '#6C7890', // inputs, secondary buttons; 4.4:1 on surface
   rh: '#2F5FE8',           // right hand on the dark stage; 3.5:1 on stage
   lh: '#F2A23A',           // left hand on the dark stage; 8.9:1 on stage; ink text on it 8.5:1
   rhOnLight: '#2350D8',    // right hand on white; 6.5:1
@@ -14,9 +14,9 @@ export const color = {
   warning: '#8A5300',      // warning text; 6.3:1 on surface
   success: '#1D7A46',      // 5.4:1 on surface
   error: '#B3261E',        // 6.5:1 on surface
-  stage: '#07122A',        // practice screen background (brand navy, darker)
-  stageRaised: '#15223D',  // controls on the stage
-  stageText: '#C8D2E4',    // 10.4:1 on stageRaised
+  stage: '#030E28',        // practice screen background (brand navy)
+  stageRaised: '#10203F',  // controls on the stage
+  stageText: '#C8D2E4',    // 10.6:1 on stageRaised
   felt: '#5B1E2A',         // thin strip above the keys
 } as const;
 

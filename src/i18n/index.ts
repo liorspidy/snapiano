@@ -4,7 +4,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { getLocales } from 'expo-localization';
-import { I18nManager } from 'react-native';
 
 import ar from './locales/ar.json';
 import en from './locales/en.json';
@@ -30,15 +29,6 @@ function deviceLanguage(): Lang {
   return (LANGUAGES as readonly string[]).includes(code) ? (code as Lang) : 'he';
 }
 
-/** Flip layout direction if needed. Returns true when the app must reload for it to apply. */
-export function applyDirection(lng: Lang): boolean {
-  const rtl = isRTL(lng);
-  if (I18nManager.isRTL === rtl) return false;
-  I18nManager.allowRTL(rtl);
-  I18nManager.forceRTL(rtl);
-  return true;
-}
-
 /** Call once at startup with the language saved on the user's profile (profiles.locale), if any. */
 export async function initI18n(saved?: Lang) {
   const lng = saved ?? deviceLanguage();
@@ -50,18 +40,12 @@ export async function initI18n(saved?: Lang) {
     nsSeparator: false,
     interpolation: { escapeValue: false },
   });
-  applyDirection(lng);
   return i18n;
 }
 
-/**
- * Switch language at any time. If the direction changed (e.g. he -> en), reload the app:
- *   if (await changeLanguage('en')) await Updates.reloadAsync();   // from expo-updates
- * Text and plurals update immediately; only RTL<->LTR needs the reload.
- */
-export async function changeLanguage(lng: Lang): Promise<boolean> {
+/** Switch language at any time. Direction follows the language through the root view's `direction` style, so no reload is needed. */
+export async function changeLanguage(lng: Lang) {
   await i18n.changeLanguage(lng);
-  return applyDirection(lng);
 }
 
 export default i18n;

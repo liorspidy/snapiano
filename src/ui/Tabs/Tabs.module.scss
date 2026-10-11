@@ -1,0 +1,84 @@
+@use '../../theme/tokens' as *;
+
+.tabs {
+  flex-direction: row;
+  align-items: center;
+  gap: $space-s;
+  padding-bottom: 2px;
+}
+
+.tab {
+  min-height: $touch-min;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  padding-horizontal: $space-l;
+  border: 1px solid $borderStrong;
+  border-radius: $radius-m;
+}
+
+.tabOn {
+  background-color: $ink;
+  border-color: $ink;
+}
+
+.pressed {
+  transform: scale(0.96);
+}
+
+.label {
+  color: $inkSecondary;
+}
+
+.labelOn {
+  color: $surface;
+}
+
+.count {
+  min-width: 18px;
+  height: 18px;
+  padding-horizontal: 5px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background-color: $ground;
+}
+
+.countOn {
+  background-color: rgba($surface, 0.2);
+}
+
+.countTextOn {
+  color: $surface;
+  font-variant: tabular-nums;
+}
+
+.countText {
+  color: $ink;
+  font-variant: tabular-nums;
+}
+
+.underlineTabs {
+  gap: 22px;
+  border-bottom: 1px solid $line;
+  padding-bottom: 0;
+}
+
+.underlineTab {
+  min-height: $touch-min;
+  padding-horizontal: 0;
+  border-width: 0;
+  border-bottom-width: 2px;
+  border-bottom-color: transparent;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.underlineTabOn {
+  background-color: transparent;
+  border-bottom-color: $ink;
+}
+
+.underlineLabelOn {
+  color: $ink;
+}

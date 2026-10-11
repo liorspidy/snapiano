@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react';
-import { FlatList, Pressable, View } from 'react-native';
+import { FlatList, InteractionManager, Pressable, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { UserRound } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/Button/Button';
-import { Text } from '@/components/Text/Text';
+import { Button } from '@/ui/Button/Button';
+import { Text } from '@/ui/Text/Text';
 import { pickImage } from '@/lib/pickImage';
 import { supabase } from '@/lib/supabase';
 import { color } from '@/theme/tokens';
@@ -18,12 +18,16 @@ export default function Library() {
   const [pieces, setPieces] = useState<Piece[]>([]);
   const [scansLeft, setScansLeft] = useState<number | null>(null); // null = unlimited or unknown
 
+  // Load after the screen transition has finished, so the slide animation never competes with the data update.
   useFocusEffect(useCallback(() => {
-    supabase.from('pieces').select('id, title, composer, progress_measure').order('updated_at', { ascending: false })
-      .then(({ data }) => setPieces(data ?? []));
-    supabase.rpc('my_entitlements').then(({ data }) => {
-      if (data?.scans_per_month != null) setScansLeft(Math.max(0, data.scans_per_month - data.scans_used));
+    const task = InteractionManager.runAfterInteractions(() => {
+      supabase.from('pieces').select('id, title, composer, progress_measure').order('updated_at', { ascending: false })
+        .then(({ data }) => setPieces(data ?? []));
+      supabase.rpc('my_entitlements').then(({ data }) => {
+        if (data?.scans_per_month != null) setScansLeft(Math.max(0, data.scans_per_month - data.scans_used));
+      });
     });
+    return () => task.cancel();
   }, []));
 
   return (
@@ -31,7 +35,7 @@ export default function Library() {
       <View style={classes.header}>
         <View style={classes.titleRow}>
           <Text variant="display" accessibilityRole="header" style={classes.grow}>{t('library.title')}</Text>
-          <Pressable accessibilityRole="button" accessibilityLabel={t('account.title')} onPress={() => router.push('/account')} style={classes.account}>
+          <Pressable accessibilityRole="button" accessibilityLabel={t('account.title')} onPress={() => router.push('/account')} style={({ pressed }) => [classes.account, pressed && classes.pressed]}>
             <UserRound color={color.ink} size={24} />
           </Pressable>
         </View>

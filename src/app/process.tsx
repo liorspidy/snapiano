@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/Button/Button';
-import { Text } from '@/components/Text/Text';
+import { Button } from '@/ui/Button/Button';
+import { Loader } from '@/ui/Loader/Loader';
+import { Text } from '@/ui/Text/Text';
 import { supabase } from '@/lib/supabase';
-import { color } from '@/theme/tokens';
 import classes from '@/styles/Process.module.scss';
 
 type Scan = { status: 'queued' | 'processing' | 'done' | 'failed'; measures: number | null; flagged_measures: number[] | null; piece_id: string | null };
@@ -35,7 +35,7 @@ export default function Process() {
   return (
     <SafeAreaView style={classes.screen}>
       <View style={classes.body}>
-        {working && <ActivityIndicator size="large" color={color.ink} />}
+        {working && <Loader size={72} label={t('process.title')} />}
         <Text variant="headline" accessibilityRole="header" style={classes.centered}>
           {working ? t('process.title') : scan.status === 'done' ? t('review.found', { count: scan.measures ?? 0 }) : t('process.failed')}
         </Text>

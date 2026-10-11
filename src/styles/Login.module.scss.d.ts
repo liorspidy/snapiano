@@ -7,11 +7,14 @@ declare const classes: {
   readonly 'card': Style;
   readonly 'brand': Style;
   readonly 'tagline': Style;
-  readonly 'google': Style;
   readonly 'divider': Style;
   readonly 'dividerLine': Style;
+  readonly 'toggle': Style;
+  readonly 'link': Style;
+  readonly 'linkText': Style;
   readonly 'message': Style;
   readonly 'bottom': Style;
   readonly 'terms': Style;
+  readonly 'pressed': Style;
 };
 export default classes;

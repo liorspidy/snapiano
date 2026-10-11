@@ -1,12 +1,8 @@
-import { useState } from 'react';
-import { View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Updates from 'expo-updates';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthProvider';
 import { Flag } from '../Flags/Flags';
-import { Select } from '../Select/Select';
-import { Text } from '../Text/Text';
+import { Select } from '@/ui/Select/Select';
 import { changeLanguage, Lang } from '@/i18n';
 import { supabase } from '@/lib/supabase';
 
@@ -18,20 +14,12 @@ const LANGS = [['he', 'עברית', 'עב'], ['en', 'English', 'EN'], ['fr', 'Fr
 export function LanguagePicker() {
   const { t, i18n } = useTranslation();
   const { session } = useAuth();
-  const [note, setNote] = useState<string>();
 
   const pick = async (lng: string) => {
     await AsyncStorage.setItem(LANG_KEY, lng);
     if (session) supabase.from('profiles').update({ locale: lng }).eq('id', session.user.id).then(() => {});
-    if (await changeLanguage(lng as Lang)) {
-      try { await Updates.reloadAsync(); } catch { setNote(t('lang.restart')); }
-    }
+    await changeLanguage(lng as Lang);
   };
 
-  return (
-    <View>
-      <Select compact label={t('lang.title')} options={LANGS} value={i18n.language} onChange={pick} />
-      {note && <Text variant="body" tone="inkSecondary">{note}</Text>}
-    </View>
-  );
+  return <Select compact label={t('lang.title')} options={LANGS} value={i18n.language} onChange={pick} />;
 }

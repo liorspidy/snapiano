@@ -1,0 +1,28 @@
+@use '../../theme/tokens' as *;
+
+.field {
+  gap: 6px;
+}
+
+.input {
+  min-height: 96px;
+  padding-vertical: 12px;
+  padding-horizontal: 14px;
+  background-color: $surface;
+  border: 1px solid $borderStrong;
+  border-radius: $radius-m;
+  color: $ink;
+  font-family: Rubik_400Regular;
+  font-size: 16px;
+  line-height: 24px;
+  text-align-vertical: top;
+}
+
+.focused {
+  border-width: 2px;
+  border-color: $ink;
+}
+
+.invalid {
+  border-color: $error;
+}

@@ -6,8 +6,22 @@
   padding-horizontal: $space-l;
 }
 
-.content {
+.header {
   padding-top: $space-xl;
+  padding-bottom: $space-m;
+}
+
+.titleRow {
+  flex-direction: row;
+  align-items: center;
+}
+
+.grow {
+  flex: 1;
+}
+
+.content {
+  padding-top: 0;
   gap: $space-s;
   padding-bottom: $space-l;
 }

@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Text } from '../Text/Text';
+import { Text } from '@/ui/Text/Text';
 import { color, handColor } from '@/theme/tokens';
 import classes from './Keyboard.module.scss';
 
