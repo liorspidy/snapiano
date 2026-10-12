@@ -4,12 +4,13 @@ import type { CameraView } from "expo-camera";
 import { File } from "expo-file-system";
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import jpeg from "jpeg-js";
+import { liveSettings, loadLiveSettings } from "@/lib/liveSettings";
 import { createSnapshotLoop } from "@/lib/snapshotLoop";
 import { Detection, detectStaves } from "@/lib/staffDetect";
 
 const WIDTH = 640;
-// Bounded rate: a new snapshot starts at most every MIN_INTERVAL_MS, and never while another one is still running.
-const MIN_INTERVAL_MS = 1500;
+// Bounded rate: a new snapshot starts at most once per interval (set in the admin screen, 0.1 s by default) and never while another
+// one is still running, so the real rate is also limited by how long one capture and analysis take.
 // Snapshots that could not be deleted (for example the app was killed in between) are retried on the next run.
 const leftovers = new Set<string>();
 
@@ -26,16 +27,16 @@ function sweepLeftovers() {
  * `pause()` waits for a snapshot in progress to finish, so taking the real photo never overlaps with one.
  */
 export function useLiveStaves(camera: RefObject<CameraView | null>, active: boolean) {
-    const [detection, setDetection] = useState<Detection>();
+    const [found, setFound] = useState<{ detection: Detection; at: number }>();
     const wanted = useRef(active);
     wanted.current = active;
 
     const loop = useMemo(
         () =>
             createSnapshotLoop({
-                minIntervalMs: MIN_INTERVAL_MS,
+                minIntervalMs: () => liveSettings.intervalMs,
                 firstDelayMs: 600,
-                minGapMs: 250,
+                minGapMs: 0,
                 run: async (isCancelled) => {
                     sweepLeftovers();
                     const files: File[] = [];
@@ -53,7 +54,7 @@ export function useLiveStaves(camera: RefObject<CameraView | null>, active: bool
                         const img = jpeg.decode(bytesFromBase64(small.base64 ?? ""), { useTArray: true });
                         const gray = new Uint8Array(img.width * img.height);
                         for (let i = 0; i < gray.length; i++) gray[i] = (img.data[i * 4] * 77 + img.data[i * 4 + 1] * 150 + img.data[i * 4 + 2] * 29) >> 8;
-                        if (!isCancelled()) setDetection(detectStaves(gray, img.width, img.height));
+                        if (!isCancelled()) setFound({ detection: detectStaves(gray, img.width, img.height), at: Date.now() });
                     } finally {
                         // runs on success, failure and cancellation: snapshots must not pile up in the cache
                         for (const f of files) { try { f.delete(); leftovers.delete(f.uri); } catch { /* stays in leftovers, retried next run */ } }
@@ -63,8 +64,10 @@ export function useLiveStaves(camera: RefObject<CameraView | null>, active: bool
         [camera],
     );
 
+    useEffect(() => { void loadLiveSettings(); }, []);
+
     useEffect(() => {
-        if (!active) { void loop.stop(); setDetection(undefined); return; }
+        if (!active) { void loop.stop(); setFound(undefined); return; }
         loop.start();
         // No snapshots while the app is in the background.
         const sub = AppState.addEventListener("change", (state) => {
@@ -77,5 +80,5 @@ export function useLiveStaves(camera: RefObject<CameraView | null>, active: bool
     const pause = useCallback(() => loop.stop(), [loop]);
     /** Starts the loop again after a pause() that did not lead to a photo. */
     const resume = useCallback(() => { if (wanted.current) loop.start(); }, [loop]);
-    return { detection, pause, resume };
+    return { detection: found?.detection, detectedAt: found?.at, pause, resume };
 }

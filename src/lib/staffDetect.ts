@@ -13,6 +13,7 @@ const LINE_TO_SPACE = 1.5;
 const ANGLES = (() => { const a: number[] = []; for (let d = -8; d <= 8; d += 1) a.push(d); return a; })();
 
 function darkPixels(gray: Uint8Array, w: number, h: number): { xs: Int16Array; ys: Int16Array; n: number } {
+    'worklet';
     // Local mean with an integral image: a pixel is ink when it is clearly darker than its surroundings.
     const stride = w + 1;
     const integral = new Float64Array(stride * (h + 1));
@@ -42,6 +43,7 @@ function darkPixels(gray: Uint8Array, w: number, h: number): { xs: Int16Array; y
 }
 
 function rowProfile(xs: Int16Array, ys: Int16Array, n: number, w: number, h: number, angleDeg: number) {
+    'worklet';
     const t = Math.tan((angleDeg * Math.PI) / 180);
     const pad = Math.ceil((w / 2) * Math.abs(t)) + 2;
     const sums = new Float32Array(h + 2 * pad);
@@ -57,6 +59,7 @@ type Band = { staves: StaffBox[]; angle: number; spacing: number };
 // Looks for staves among the ink pixels whose row is in [y0, y1). Each band gets its own tilt, so a curved page or one
 // photographed at an angle (tilt changing down the page) is still followed.
 function detectInBand(xs: Int16Array, ys: Int16Array, n: number, w: number, h: number, y0: number, y1: number): Band {
+    'worklet';
     const bx: number[] = [], by: number[] = [];
     for (let i = 0; i < n; i++) if (ys[i] >= y0 && ys[i] < y1) { bx.push(xs[i]); by.push(ys[i]); }
     const m = bx.length;
@@ -160,9 +163,13 @@ function detectInBand(xs: Int16Array, ys: Int16Array, n: number, w: number, h: n
     return { staves, angle: best, spacing: staves.length ? spacing / staves.length : 0 };
 }
 
-const centreY = (s: StaffBox) => (s.corners[0].y + s.corners[2].y) / 2;
+const centreY = (s: StaffBox) => {
+    'worklet';
+    return (s.corners[0].y + s.corners[2].y) / 2;
+};
 
 export function detectStaves(gray: Uint8Array, w: number, h: number): Detection {
+    'worklet';
     let total = 0;
     for (let i = 0; i < gray.length; i += 7) total += gray[i];
     const brightness = total / Math.ceil(gray.length / 7);
@@ -190,6 +197,7 @@ export type LiveHint = "none" | "dark" | "closer" | "edge" | "ready" | "partial"
 
 /** What to tell the user about the current picture. Thresholds are a starting point, to be calibrated on real photos. */
 export function liveHint(det: Detection): LiveHint {
+    'worklet';
     if (det.brightness < 70) return "dark";
     if (!det.staves.length) return "none";
     if (det.spacing < 3) return "closer";

@@ -10,7 +10,8 @@ import { Keyboard } from "@/components/Keyboard/Keyboard";
 import { Text } from "@/ui/Text/Text";
 import { Modal } from "@/ui/Modal/Modal";
 import { Button } from "@/ui/Button/Button";
-import { mix, playNote, setMix } from "@/audio/synth";
+import { audioTime, mix, playNote, setMix, warmUp } from "@/audio/synth";
+import { notesInWindow } from "@/audio/audioMath";
 import { VerticalSlider } from "@/ui/VerticalSlider/VerticalSlider";
 import { loadPiece, Piece } from "@/lib/piece";
 import { color, handColor } from "@/theme/tokens";
@@ -19,6 +20,7 @@ import { useDirection } from "@/hooks/useDirection";
 
 type Hands = "both" | "R" | "L";
 const TICK_MS = 33;
+const LOOKAHEAD_S = 0.12;
 const MIN_BPM = 30;
 const MAX_BPM = 200;
 
@@ -70,6 +72,7 @@ export default function Practice() {
     const [bpm, setBpm] = useState(80);
     const [tempoOpen, setTempoOpen] = useState(false);
     const [mixerOpen, setMixerOpen] = useState(false);
+    useEffect(warmUp, []);
     // The modal is at most 86% of the screen; its padding, title and labels take ~155dp, the faders get the rest.
     const sliderHeight = Math.min(220, Math.max(80, Math.floor(useWindowDimensions().height * 0.86) - 155));
     const [levels, setLevels] = useState({ ...mix });
@@ -115,28 +118,32 @@ export default function Practice() {
         () => Math.max(0, ...(piece?.notes.map((n) => n.s + n.d) ?? [])),
         [piece],
     );
+    // Notes are scheduled on the audio clock up to LOOKAHEAD_S ahead, so they land on time even when the JS thread
+    // stutters; the cursor follows the same clock. `scheduledRef` (beats) is the end of the last scheduled window.
+    const scheduledRef = useRef(-Infinity);
     useEffect(() => {
-        if (!playing) return;
-        let last = Date.now();
-        const timer = setInterval(() => {
-            const now = Date.now();
-            const before = posRef.current;
-            posRef.current += ((now - last) / 1000) * (bpm / 60);
-            last = now;
-            for (const n of piece?.notes ?? []) {
-                if (
-                    n.s >= before &&
-                    n.s < posRef.current &&
-                    (hands === "both" || n.h === hands)
-                )
-                    playNote(n.m, (n.d * 60) / bpm);
-            }
+        if (!playing || !piece) return;
+        const anchorTime = audioTime();
+        const anchorPos = posRef.current;
+        const toTime = (beat: number) => anchorTime + ((beat - anchorPos) * 60) / bpm;
+        const notes = piece.notes.filter((n) => hands === "both" || n.h === hands);
+        if (scheduledRef.current < anchorPos - 1e-6) scheduledRef.current = anchorPos - 1e-6;
+        const tick = () => {
+            const now = audioTime();
+            posRef.current = anchorPos + ((now - anchorTime) * bpm) / 60;
+            const horizon = posRef.current + (LOOKAHEAD_S * bpm) / 60;
+            for (const n of notesInWindow(notes, scheduledRef.current, horizon))
+                playNote(n.m, (n.d * 60) / bpm, toTime(n.s));
+            scheduledRef.current = Math.max(scheduledRef.current, horizon);
             if (posRef.current >= end) {
                 setPlaying(false);
-                posRef.current = piece?.notes[0]?.s ?? 0;
+                posRef.current = piece.notes[0]?.s ?? 0;
+                scheduledRef.current = -Infinity;
             }
             setPos(posRef.current);
-        }, TICK_MS);
+        };
+        tick();
+        const timer = setInterval(tick, TICK_MS);
         return () => clearInterval(timer);
     }, [playing, bpm, end, piece, hands]);
 

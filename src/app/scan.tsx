@@ -7,7 +7,13 @@ import { ScanLine, Search, Zap, ZapOff } from "lucide-react-native";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/auth/AuthProvider";
 import { BackButton } from "@/components/BackButton/BackButton";
+import { SafeBoundary } from "@/components/SafeBoundary/SafeBoundary";
 import { StaffOverlay } from "@/components/StaffOverlay/StaffOverlay";
+import type { LiveCameraHandle, LiveResult } from "@/components/LiveCamera/LiveCamera";
+import { useCameraMotion } from "@/hooks/useCameraMotion";
+import { useSnapshotTracks } from "@/hooks/useSnapshotTracks";
+import { isNativeLiveAvailable } from "@/lib/nativeLive";
+import { liveHint } from "@/lib/staffDetect";
 import { useLiveStaves } from "@/hooks/useLiveStaves";
 import { usePageLoader } from "@/components/PageLoader/PageLoader";
 import { Button } from "@/ui/Button/Button";
@@ -18,6 +24,10 @@ import { pickImage } from "@/lib/pickImage";
 import { color } from "@/theme/tokens";
 import classes from "@/styles/Scan.module.scss";
 import { useDirection } from "@/hooks/useDirection";
+
+// The real-time camera is loaded only when the app build has its native parts (a development build); in Expo Go it stays out.
+const nativeLive = isNativeLiveAvailable();
+const LiveCamera = nativeLive ? (require("@/components/LiveCamera/LiveCamera") as typeof import("@/components/LiveCamera/LiveCamera")).LiveCamera : null;
 
 export default function Scan() {
     const direction = useDirection();
@@ -39,11 +49,25 @@ export default function Scan() {
     const ZOOM = [0, 0.25, 0.5];
     const [preview, setPreview] = useState({ width: 0, height: 0 });
     const focused = useIsFocused();
-    const live = useLiveStaves(camera, focused && liveOn && ready && !photo && !!permission?.granted && !busy);
+    // If the real-time camera fails to start on this phone, the snapshot camera takes over instead of leaving a broken screen.
+    const [nativeFailed, setNativeFailed] = useState(false);
+    const useNative = nativeLive && !nativeFailed;
+    const liveActive = focused && liveOn && ready && !photo && !!permission?.granted && !busy;
+    // Expo Go: snapshots, one at a time. Development build: the real-time camera reports on every frame.
+    const live = useLiveStaves(camera, liveActive && !useNative);
+    const moving = useCameraMotion(liveActive && !useNative);
+    const snapshotTracks = useSnapshotTracks(liveOn && !useNative ? live.detection : undefined);
+    const liveRef = useRef<LiveCameraHandle>(null);
+    const [frameResult, setFrameResult] = useState<LiveResult>();
 
     const capture = async () => {
         await live.pause();
         try {
+            if (useNative) {
+                const uri = await liveRef.current?.capture();
+                if (uri) setPhoto(uri);
+                return;
+            }
             const shot = await camera.current?.takePictureAsync({ quality: 1, skipProcessing: false, shutterSound: false });
             if (shot) setPhoto(shot.uri);
             else live.resume();
@@ -164,6 +188,7 @@ export default function Scan() {
                 >
                     {torch ? <Zap color={color.ink} size={24} /> : <ZapOff color={color.surface} size={24} />}
                 </Pressable>
+                {!useNative && (
                 <Pressable
                     accessibilityRole="button"
                     accessibilityLabel={t("scan.zoom", { level: 1 + ZOOM[(zoomStep + 1) % ZOOM.length] * 4 })}
@@ -173,6 +198,7 @@ export default function Scan() {
                     <Search color={color.surface} size={20} />
                     <Text variant="caption" style={classes.toolText}>{`${1 + ZOOM[zoomStep] * 4}x`}</Text>
                 </Pressable>
+                )}
             </View>
             <View
                 style={classes.view}
@@ -182,17 +208,53 @@ export default function Scan() {
                     if (Platform.OS === "ios") setFocus({ x: e.nativeEvent.locationX, y: e.nativeEvent.locationY, n: Date.now() });
                 }}
             >
-                <CameraView
-                    ref={camera}
-                    style={classes.camera}
-                    facing="back"
-                    enableTorch={torch}
-                    zoom={ZOOM[zoomStep]}
-                    autofocus={focus ? "on" : "off"}
-                    animateShutter={false}
-                    onCameraReady={() => setReady(true)}
-                />
-                <StaffOverlay detection={liveOn ? live.detection : undefined} width={preview.width} height={preview.height} />
+                {LiveCamera && useNative ? (
+                    <SafeBoundary onError={() => { setNativeFailed(true); setReady(false); }}>
+                    <LiveCamera
+                        ref={liveRef}
+                        live={liveActive}
+                        torch={torch}
+                        width={preview.width}
+                        height={preview.height}
+                        onResult={setFrameResult}
+                        onReady={() => setReady(true)}
+                    />
+                    </SafeBoundary>
+                ) : (
+                    <CameraView
+                        ref={camera}
+                        style={classes.camera}
+                        facing="back"
+                        enableTorch={torch}
+                        zoom={ZOOM[zoomStep]}
+                        autofocus={focus ? "on" : "off"}
+                        animateShutter={false}
+                        onCameraReady={() => setReady(true)}
+                    />
+                )}
+                {liveOn && useNative && frameResult ? (
+                    <StaffOverlay
+                        tracks={frameResult.tracks}
+                        source={{ width: frameResult.width, height: frameResult.height }}
+                        hint={frameResult.hint}
+                        count={frameResult.count}
+                        detectedAt={frameResult.at}
+                        moving={false}
+                        width={preview.width}
+                        height={preview.height}
+                    />
+                ) : (
+                    <StaffOverlay
+                        tracks={snapshotTracks}
+                        source={live.detection ? { width: live.detection.width, height: live.detection.height } : undefined}
+                        hint={live.detection ? liveHint(live.detection) : undefined}
+                        count={live.detection?.staves.length ?? 0}
+                        detectedAt={live.detectedAt}
+                        moving={moving}
+                        width={preview.width}
+                        height={preview.height}
+                    />
+                )}
                 <View pointerEvents="none" style={classes.guide} />
                 {focus && Platform.OS === "ios" && (
                     <View pointerEvents="none" style={[classes.focusRing, { left: focus.x - 32, top: focus.y - 32 }]} />

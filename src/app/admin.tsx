@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { BackButton } from "@/components/BackButton/BackButton";
+import { CameraTab } from "@/components/CameraTab/CameraTab";
 import { CodesTab } from "@/components/CodesTab/CodesTab";
 import { PlansTab } from "@/components/PlansTab/PlansTab";
 import { ReportsTab } from "@/components/ReportsTab/ReportsTab";
@@ -14,7 +15,7 @@ import { Tabs } from "@/ui/Tabs/Tabs";
 import { Text } from "@/ui/Text/Text";
 import classes from "@/styles/Admin.module.scss";
 
-type Tab = "users" | "plans" | "codes" | "reports";
+type Tab = "users" | "plans" | "codes" | "reports" | "camera";
 
 export default function Admin() {
     const direction = useDirection();
@@ -45,6 +46,7 @@ export default function Admin() {
                     { id: "plans", title: t("admin.plans") },
                     { id: "codes", title: t("admin.codes") },
                     { id: "reports", title: t("admin.reports") },
+                    { id: "camera", title: t("admin.camera") },
                 ]}
             />
             <ScrollView contentContainerStyle={classes.content}>
@@ -52,6 +54,7 @@ export default function Admin() {
                 {tab === "plans" && <PlansTab />}
                 {tab === "codes" && <CodesTab />}
                 {tab === "reports" && <ReportsTab />}
+                {tab === "camera" && <CameraTab />}
             </ScrollView>
         </SafeAreaView>
     );

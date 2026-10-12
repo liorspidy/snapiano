@@ -12,7 +12,8 @@ export type SnapshotLoop = {
 
 type Options = {
     run: (isCancelled: () => boolean) => Promise<void>;
-    minIntervalMs: number;
+    /** A number, or a function read before every cycle so the interval can be changed while the loop runs. */
+    minIntervalMs: number | (() => number);
     firstDelayMs?: number;
     minGapMs?: number;
 };
@@ -33,7 +34,8 @@ export function createSnapshotLoop({ run, minIntervalMs, firstDelayMs = 0, minGa
         inFlight = job;
         await job;
         if (inFlight === job) inFlight = null;
-        if (gen === generation) schedule(gen, Math.max(minGapMs, minIntervalMs - (Date.now() - startedAt)));
+        const interval = typeof minIntervalMs === "function" ? minIntervalMs() : minIntervalMs;
+        if (gen === generation) schedule(gen, Math.max(minGapMs, interval - (Date.now() - startedAt)));
     };
 
     return {

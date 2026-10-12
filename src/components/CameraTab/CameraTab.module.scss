@@ -1,0 +1,39 @@
+@use '../../theme/tokens' as *;
+
+.card {
+  gap: $space-m;
+  padding: $space-l;
+  border-radius: $radius-m;
+  background-color: $surface;
+}
+
+.row {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-m;
+}
+
+.value {
+  flex: 1;
+  text-align: center;
+  font-variant: tabular-nums;
+}
+
+.step {
+  width: $touch-min;
+  height: $touch-min;
+  align-items: center;
+  justify-content: center;
+  border-radius: $radius-m;
+  border: 1px solid $borderStrong;
+  background-color: $surface;
+}
+
+.pressed {
+  transform: scale(0.96);
+}
+
+.disabled {
+  opacity: 0.4;
+}
