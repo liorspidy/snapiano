@@ -1,0 +1,37 @@
+@use '../theme/tokens' as *;
+
+.screen {
+  flex: 1;
+  background-color: $ground;
+}
+
+.content {
+  padding-horizontal: $space-l;
+  padding-vertical: $space-l;
+  gap: $space-s;
+}
+
+.row {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: $space-s;
+}
+
+.section {
+  margin-top: $space-m;
+}
+
+.report {
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 18px;
+  color: $ink;
+}
+
+.footer {
+  padding-horizontal: $space-l;
+  padding-vertical: $space-m;
+  border-top-width: 1px;
+  border-top-color: $borderStrong;
+  background-color: $surface;
+}

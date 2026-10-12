@@ -1,3 +1,4 @@
+import "@/lib/nitroWorklets";
 import { Ref, useCallback, useEffect, useImperativeHandle, useMemo, useState } from "react";
 import { Camera, useCameraDevice, useCameraPermission, useFrameOutput, usePhotoOutput } from "react-native-vision-camera";
 import { createResizer, type Resizer } from "react-native-vision-camera-resizer";
